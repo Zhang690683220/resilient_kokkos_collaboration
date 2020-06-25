@@ -1,4 +1,9 @@
 
+#include <Kokkos_Macros.hpp>
+#if defined(KOKKOS_ENABLE_HPX)
+#include <hpx/hpx_main.hpp>
+#endif
+
 #include <mpi.h>
 #include <Kokkos_Core.hpp>
 #include <resilience/Context.hpp>
