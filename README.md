@@ -15,7 +15,7 @@ First and foremost, *Kokkos Resilience* requires an install of *Kokkos*. This ca
 other software (such as Trilinos) or as a package on a machine.
 
 **Note:** *Kokkos Resilience* currently requires some internal changes to Kokkos that are not yet merged in. Use the
-[kokkos-fork](Will be built soon) repository (altdev branch) in the meantime.
+[kokkos-fork](https://gitlab-ex.sandia.gov/kokkos-resilience/kokkos) repository (altdev branch) in the meantime.
 
 Additionally, *Kokkos Resilience* uses the [Veloc](https://github.com/ECP-VeloC/VELOC) library for efficient asynchronous
 checkpointing. If you desire automatic checkpointing to be available this library (and additionally MPI) must be installed.
@@ -23,10 +23,10 @@ checkpointing. If you desire automatic checkpointing to be available this librar
 #### Obtaining VeloC
 
 We are maintaining a special spack package for VeloC since the main one is not up-to-date. It can be found
-[here](will be built soon) and can be installed via:
+[here](https://gitlab-ex.sandia.gov/kokkos-resilience/kr-spack) and can be installed via:
 
 ```sh
-git clone (kr-spack location)
+git clone git@gitlab-ex.sandia.gov:kokkos-resilience/kr-spack.git
 spack repo add kr-spack
 spack install veloc@barebone
 ```
