@@ -46,7 +46,9 @@ find_package_handle_standard_args(Dataspaces ${_fail_msg}
 
 add_library(Dataspaces::Dataspaces UNKNOWN IMPORTED)
 set_target_properties(Dataspaces::Dataspaces PROPERTIES
-                      IMPORTED_LOCATION ${_dataspaces_lib} ${_dart_lib} ${_dscommon_lib}
+                      IMPORTED_LOCATION ${_dataspaces_lib}
+                      IMPORTED_LOCATION_DART ${_dart_lib}
+                      IMPORTED_LOCATION_DSCOMMON ${_dscommon_lib}
                       INTERFACE_INCLUDE_DIRECTORIES ${_dataspaces_include_dir}
                       )
 
