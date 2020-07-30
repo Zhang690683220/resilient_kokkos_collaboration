@@ -55,6 +55,7 @@ endif()
 option( KR_ENABLE_STDIO "use stdio for manual checkpoint" OFF )
 option( KR_ENABLE_HDF5 "add HDF5 support" OFF )
 option( KR_ENABLE_HDF5_PARALLEL "use parallel version of HDF5" OFF )
+option( KR_ENABLE_DATASPACES "add Dataspaces support" OFF )
 
 if (KR_ENABLE_HDF5_PARALLEL)
   set(KR_ENABLE_HDF5 ON)
@@ -67,8 +68,14 @@ if (KR_ENABLE_HDF5)
    target_compile_definitions(resilience PUBLIC KR_ENABLE_HDF5)
 endif()
 
+if (KR_ENABLE_DATASPACES)
+   find_package(Dataspaces REQUIRED)
+   target_link_libraries(resilience PUBLIC Dataspaces::Dataspaces)
+   target_compile_definitions(resilience PUBLIC KR_ENABLE_DATASPACES)
+endif()
+
 # MPI requirement
-if (KR_ENABLE_VELOC OR KR_ENABLE_HDF5_PARALLEL)
+if (KR_ENABLE_VELOC OR KR_ENABLE_HDF5_PARALLEL OR KR_ENABLE_DATASPACES)
    find_package(MPI REQUIRED)
    target_link_libraries(resilience PRIVATE MPI::MPI_CXX)
 endif()
@@ -140,6 +147,15 @@ if (KR_ENABLE_HDF5)
 
   # Need to install/export HDF5 find module for downstream dependencies
   configure_file(cmake/Modules/FindHDF5.cmake Modules/FindHDF5.cmake COPYONLY)
+endif()
+
+if (KR_ENABLE_DATASPACES)
+  install(FILES
+          ${CMAKE_MODULE_PATH}/FindDataspaces.cmake
+          DESTINATION ${CMAKE_INSTALL_PREFIX}/cmake/Modules )
+
+  # Need to install/export Dataspaces find module for downstream dependencies
+  configure_file(cmake/Modules/FindDataspaces.cmake Modules/FindDataspaces.cmake COPYONLY)
 endif()
 
 configure_file(src/resilience/config/Config.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/src/resilience/config/Config.hpp @ONLY)

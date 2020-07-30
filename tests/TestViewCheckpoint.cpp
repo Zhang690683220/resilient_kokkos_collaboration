@@ -264,3 +264,23 @@ TYPED_TEST( TestViewCheckpoint, hdf5 )
 }
 
 #endif
+
+#ifdef KR_ENABLE_DATASPACES
+
+TYPED_TEST( TestViewCheckpoint, dataspaces )
+{
+  using exec_space = typename TestFixture::exec_space;
+
+  TestFSDeepCopy< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt("./data/cp_view.ds",10,10);
+  
+  TestFSDeepCopy< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt("./data/cp_view1.ds",100,100);
+  
+  TestFSDeepCopy< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt("./data/cp_view2.ds",10000,10000);
+
+  for (int n = 0; n < 10; n++) {
+    TestCheckPointView< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt(n, "view", 10,10,"./data/dataspaces/");
+  }
+
+}
+
+#endif
