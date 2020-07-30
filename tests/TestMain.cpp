@@ -3,6 +3,10 @@
 #include <Kokkos_Core.hpp>
 #include <resilience/Resilience.hpp>
 
+#if defined(KR_ENABLE_HDF5_PARALLEL) || defined(KR_ENABLE_VELOC) || defined(KR_ENABLE_DATASPACES)
+#include <mpi.h>
+#endif
+
 int
 main( int argc, char **argv )
 {
