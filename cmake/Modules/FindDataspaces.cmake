@@ -6,7 +6,7 @@ find_path(_dataspaces_root
           )
 
 find_library(_dataspaces_lib
-             NAMES libdspaces.a
+             NAMES libdspaces.a libdart.a libdscommon.a
              HINTS ${_dataspaces_root}/lib ${_dataspaces_root}/lib64)
 
 find_path(_dataspaces_include_dir
