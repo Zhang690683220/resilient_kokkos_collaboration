@@ -74,7 +74,7 @@ public:
 
     void finalize();
    
-    virtual ~KokkosDataspacesFileAccessor() {
+    virtual ~KokkosDataspacesAccessor() {
     }
 };
 
