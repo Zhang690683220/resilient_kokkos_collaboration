@@ -76,7 +76,7 @@ public:
    
     virtual ~KokkosDataspacesFileAccessor() {
     }
-}
+};
 
 /// \class DataspacesSpace
 /// \brief Memory management for Dataspaces
@@ -143,7 +143,7 @@ public:
     static void set_default_path( const std::string path );
     static std::string s_default_path;
 
-    static std::map<const std::string, KokkosDataspacesAccessor> DataspacesSpace::m_accessor_map;
+    static std::map<const std::string, KokkosDataspacesAccessor> m_accessor_map;
 
 private:
     static constexpr const char* m_name = "Dataspaces";
