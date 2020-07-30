@@ -61,7 +61,7 @@ public:
     int initialize( const std::string & filepath );
     int initialize( const size_t size_, const std::string &file_path);
 
-    bool open_file(int read_write);
+    int open_file(int read_write);
     void close_file();
     bool is_initialized() { return m_is_initialized; }
     
