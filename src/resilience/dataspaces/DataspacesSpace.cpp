@@ -10,7 +10,7 @@ namespace KokkosResilience {
         file_path = filepath;
         MPI_Comm_size( MPI_COMM_WORLD, &mpi_size );
         MPI_Comm_rank( MPI_COMM_WORLD, &mpi_rank);
-        dspaces_init(nprocs, 1, &gcomm, NULL); // TODO: How to define appid ?
+        dspaces_init(mpi_size, 1, &gcomm, NULL); // TODO: How to define appid ?
         return 0;
     }
 
@@ -70,7 +70,7 @@ namespace KokkosResilience {
 
     void KokkosDataspacesAccessor::close_file() {
         /* Same as open_file() */
-        return 0;
+        
     }
 
     void KokkosDataspacesAccessor::finalize() {
@@ -92,7 +92,7 @@ namespace KokkosResilience {
     void * DataspacesSpace::allocate( const size_t arg_alloc_size, const std::string & path ) const {
 
         KokkosDataspacesAccessor acc = m_accessor_map[path];
-        if(!acc.isinitialized() ) {
+        if(!acc.is_initialized() ) {
 
             // TODO: use boost::ptree to provide a constructor with config manager
             acc.initialize(arg_alloc_size, path);
@@ -218,7 +218,7 @@ SharedAllocationRecord< KokkosResilience::DataspacesSpace , void >::
     #if defined(KOKKOS_ENABLE_PROFILING)
     if(Kokkos::Profiling::profileLibraryLoaded()) {
         Kokkos::Profiling::deallocateData(
-            Kokkos::Profiling::SpaceHandle(KokkosResilience::HDF5Space::name()),RecordBase::m_alloc_ptr->m_label,
+            Kokkos::Profiling::SpaceHandle(KokkosResilience::DataspacesSpace::name()),RecordBase::m_alloc_ptr->m_label,
             data(),size());
     }
     #endif

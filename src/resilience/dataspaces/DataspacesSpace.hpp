@@ -24,6 +24,7 @@ public:
     size_t version;         // version of the dataset
     int mpi_size;
     int mpi_rank;
+    MPI_Comm gcomm = MPI_COMM_WORLD;
     bool m_is_initialized;
 
 
@@ -61,7 +62,7 @@ public:
     int initialize( const std::string & filepath );
     int initialize( const size_t size_, const std::string &file_path);
 
-    bool open_file(int read_write);
+    int open_file(int read_write);
     void close_file();
     bool is_initialized() { return m_is_initialized; }
     
