@@ -1,5 +1,6 @@
 #include "Kokkos_Core.hpp"
 #include "DataspacesSpace.hpp"
+#include "Kokkos_Macros.hpp"
 
 #include "mpi.h"
 
