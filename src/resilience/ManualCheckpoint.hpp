@@ -7,6 +7,11 @@
    #ifdef KR_ENABLE_HDF5
       #include "hdf5/HDF5Space.hpp"
    #endif
+
+   #ifdef KR_ENABLE_DATASPACES
+      #include "dataspaces/DataspacesSpace.hpp"
+   #endif
+
 #endif
 
 #endif  // INC_RESILIENCE_MANUALCHECKPOINT_HPP
