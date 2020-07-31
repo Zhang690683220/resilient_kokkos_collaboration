@@ -209,7 +209,7 @@ namespace {
   
 } // namespace
 
-
+/*
 TYPED_TEST_SUITE( TestViewCheckpoint, enabled_exec_spaces );
 
 TYPED_TEST( TestViewCheckpoint, stdio )
@@ -231,7 +231,7 @@ TYPED_TEST( TestViewCheckpoint, stdio )
     TestCheckPointView< exec_space, KokkosResilience::StdFileSpace >::test_view_chkpt(n, "view", 10,10,"./data/stdfile/");
   }
 }
-
+*/
 
 #ifdef KR_ENABLE_HDF5
 
