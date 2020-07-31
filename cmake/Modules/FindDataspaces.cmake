@@ -21,6 +21,14 @@ find_path(_dataspaces_include_dir
           NAMES dataspaces.h
           HINTS ${_dataspaces_root}/include)
 
+find_library(_ds_m_lib m)
+
+find_library(_ds_rt_lib rt)
+
+find_library(_ds_ibverbs_lib ibverbs)
+
+find_library(_ds_rdmacm_lib rdmacm)
+
 if ((NOT ${_dataspaces_root})
         OR (NOT ${_dataspaces_lib})
         OR (NOT ${_dart_lib})
@@ -59,6 +67,13 @@ set_target_properties(Dataspaces::Dataspaces PROPERTIES
                       IMPORTED_LOCATION ${_dataspaces_lib} ${_dart_lib} ${_dscommon_lib}
                       INTERFACE_INCLUDE_DIRECTORIES ${_dataspaces_include_dir}
                       INTERFACE_LINK_LIBRARIES "Dataspaces::Dart;Dataspaces::Common"
+                      )
+
+target_link_libraries(Dataspaces::Dataspaces 
+                      PUBLIC ${_ds_m_lib}
+                      PUBLIC ${_ds_rt_lib}
+                      PUBLIC ${_ds_ibverbs_lib}
+                      PUBLIC ${_ds_rdmacm_lib}
                       )
 
 set(DATASPACES_DIR ${_dataspaces_root})
