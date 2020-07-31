@@ -14,6 +14,15 @@ namespace KokkosResilience {
         return 0;
     }
 
+    int KokkosDataspacesAccessor::initialize( const size_t size_, const std::string &file_path) {
+        data_size = size_;
+        file_path = filepath;
+        MPI_Comm_size( MPI_COMM_WORLD, &mpi_size );
+        MPI_Comm_rank( MPI_COMM_WORLD, &mpi_rank);
+        dspaces_init(mpi_size, 1, &gcomm, NULL); // TODO: How to define appid ?
+        return 0;
+    }
+
     size_t KokkosDataspacesAccessor::OpenFile_impl() {
         open_file(KokkosIOAccessor::WRITE_FILE);
         close_file();
