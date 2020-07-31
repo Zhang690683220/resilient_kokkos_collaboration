@@ -69,12 +69,12 @@ set_target_properties(Dataspaces::Dataspaces PROPERTIES
                       INTERFACE_LINK_LIBRARIES "Dataspaces::Dart;Dataspaces::Common"
                       )
 
-target_link_libraries(Dataspaces::Dataspaces 
-                      PUBLIC ${_ds_m_lib}
-                      PUBLIC ${_ds_rt_lib}
-                      PUBLIC ${_ds_ibverbs_lib}
-                      PUBLIC ${_ds_rdmacm_lib}
-                      )
+# target_link_libraries(Dataspaces::Dataspaces 
+#                      PUBLIC ${_ds_m_lib}
+#                      PUBLIC ${_ds_rt_lib}
+#                      PUBLIC ${_ds_ibverbs_lib}
+#                      PUBLIC ${_ds_rdmacm_lib}
+#                      )
 
 set(DATASPACES_DIR ${_dataspaces_root})
 
