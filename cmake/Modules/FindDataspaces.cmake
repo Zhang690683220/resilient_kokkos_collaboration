@@ -56,3 +56,5 @@ mark_as_advanced(
   _dataspaces_library
   _dataspaces_include_dir
 )
+
+message(STATUS "DS_LIB=$_dataspaces_library}")
