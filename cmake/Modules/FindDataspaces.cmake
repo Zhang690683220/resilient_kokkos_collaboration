@@ -52,6 +52,7 @@ find_package_handle_standard_args(Dataspaces ${_fail_msg}
                                   MPI_CXX_FOUND
                                   )
 
+
 add_library(Dataspaces::Common UNKNOWN IMPORTED)
 set_target_properties(Dataspaces::Common PROPERTIES
                       IMPORTED_LOCATION ${_dscommon_lib}
@@ -64,7 +65,7 @@ set_target_properties(Dataspaces::Dart PROPERTIES
 
 add_library(Dataspaces::Dataspaces UNKNOWN IMPORTED)
 set_target_properties(Dataspaces::Dataspaces PROPERTIES
-                      IMPORTED_LOCATION ${_dataspaces_lib} ${_dart_lib} ${_dscommon_lib}
+                      IMPORTED_LOCATION ${_dataspaces_lib}
                       INTERFACE_INCLUDE_DIRECTORIES ${_dataspaces_include_dir}
                       INTERFACE_LINK_LIBRARIES "Dataspaces::Dart;Dataspaces::Common"
                       )
