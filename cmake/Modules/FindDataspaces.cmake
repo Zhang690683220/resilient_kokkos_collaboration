@@ -13,6 +13,8 @@ find_path(_dataspaces_include_dir
           NAMES dataspaces.h
           HINTS ${_dataspaces_root}/include)
 
+          message(STATUS "Dataspaces_root=${_dataspaces_root}")
+
 if ((NOT ${_dataspaces_root})
         OR (NOT ${_dataspaces_lib})
         OR (NOT ${_dart_lib})
