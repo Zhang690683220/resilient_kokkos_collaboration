@@ -6,15 +6,7 @@ find_path(_dataspaces_root
           )
 
 find_library(_dataspaces_lib
-             NAMES libdspaces.a
-             HINTS ${_dataspaces_root}/lib ${_dataspaces_root}/lib64)
-
-find_library(_dart_lib
-             NAMES libdart.a
-             HINTS ${_dataspaces_root}/lib ${_dataspaces_root}/lib64)
-
-find_library(_dscommon_lib
-             NAMES libdscommon.a
+             NAMES libdspaces.a libdart.a libdscommon.a
              HINTS ${_dataspaces_root}/lib ${_dataspaces_root}/lib64)
 
 find_path(_dataspaces_include_dir
@@ -37,8 +29,6 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Dataspaces ${_fail_msg}
                                   _dataspaces_root
                                   _dataspaces_lib
-                                  _dart_lib
-                                  _dscommon_lib
                                   _dataspaces_include_dir
                                   MPI_FOUND
                                   MPI_CXX_FOUND
@@ -47,8 +37,6 @@ find_package_handle_standard_args(Dataspaces ${_fail_msg}
 add_library(Dataspaces::Dataspaces UNKNOWN IMPORTED)
 set_target_properties(Dataspaces::Dataspaces PROPERTIES
                       IMPORTED_LOCATION ${_dataspaces_lib}
-                      IMPORTED_LOCATION_DART ${_dart_lib}
-                      IMPORTED_LOCATION_DSCOMMON ${_dscommon_lib}
                       INTERFACE_INCLUDE_DIRECTORIES ${_dataspaces_include_dir}
                       )
 
