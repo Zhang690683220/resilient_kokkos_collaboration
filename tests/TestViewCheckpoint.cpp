@@ -209,9 +209,9 @@ namespace {
   
 } // namespace
 
-/*
-TYPED_TEST_SUITE( TestViewCheckpoint, enabled_exec_spaces );
 
+TYPED_TEST_SUITE( TestViewCheckpoint, enabled_exec_spaces );
+/*
 TYPED_TEST( TestViewCheckpoint, stdio )
 {
   using exec_space = typename TestFixture::exec_space;
