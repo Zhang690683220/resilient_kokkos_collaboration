@@ -60,7 +60,7 @@ public:
     //TODO: Construction Function with other size
 
     int initialize( const std::string & filepath );
-    int initialize( const size_t size_, const std::string &file_path);
+    int initialize( const size_t size_, const std::string &filepath);
 
     int open_file(int read_write);
     void close_file();

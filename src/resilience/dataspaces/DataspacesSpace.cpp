@@ -14,7 +14,7 @@ namespace KokkosResilience {
         return 0;
     }
 
-    int KokkosDataspacesAccessor::initialize( const size_t size_, const std::string &file_path) {
+    int KokkosDataspacesAccessor::initialize( const size_t size_, const std::string & filepath) {
         data_size = size_;
         file_path = filepath;
         MPI_Comm_size( MPI_COMM_WORLD, &mpi_size );
