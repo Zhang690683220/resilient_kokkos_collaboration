@@ -29,6 +29,8 @@ find_library(_ds_ibverbs_lib ibverbs)
 
 find_library(_ds_rdmacm_lib rdmacm)
 
+message(STATUS "rt_LIB=${_ds_rt_lib}")
+
 if ((NOT ${_dataspaces_root})
         OR (NOT ${_dataspaces_lib})
         OR (NOT ${_dart_lib})
@@ -51,6 +53,7 @@ find_package_handle_standard_args(Dataspaces ${_fail_msg}
                                   MPI_FOUND
                                   MPI_CXX_FOUND
                                   )
+
 
 
 add_library(Dataspaces::Common UNKNOWN IMPORTED)
@@ -84,4 +87,4 @@ mark_as_advanced(
   _dataspaces_include_dir
 )
 
-message(STATUS "DS_LIB=${_dataspaces_library}")
+
