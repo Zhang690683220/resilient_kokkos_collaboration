@@ -72,7 +72,7 @@ if (KR_ENABLE_DATASPACES)
    find_package(Dataspaces REQUIRED)
    target_link_libraries(resilience PUBLIC Dataspaces::Dataspaces)
    target_compile_definitions(resilience PUBLIC KR_ENABLE_DATASPACES)
-   message(STATUS "Dataspaces=${Dataspaces::Dataspaces}")
+   message(STATUS "Dataspaces=${Dataspaces}")
 endif()
 
 # MPI requirement
