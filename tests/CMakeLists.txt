@@ -7,6 +7,8 @@ FetchContent_Declare(googletest
 
 FetchContent_MakeAvailable(googletest)
 
+find_package(Dataspaces REQUIRED)
+
 add_executable(resilience_tests
                TestMain.cpp
                TestResilience.cpp
@@ -28,7 +30,7 @@ if (KR_ENABLE_STDIO)
   target_sources(resilience_tests PRIVATE
                  TestViewCheckpoint.cpp
                  )
-                 find_package(Dataspaces REQUIRED)
+                 
 endif()
 
 
