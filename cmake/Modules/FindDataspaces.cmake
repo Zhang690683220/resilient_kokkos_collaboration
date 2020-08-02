@@ -1,90 +1,102 @@
-find_package(MPI)
+#------------------------------------------------------------------------------#
+# Distributed under the OSI-approved Apache License, Version 2.0.  See
+# accompanying file Copyright.txt for details.
+#------------------------------------------------------------------------------#
+#
+# FindDATASPACES
+# -----------
+#
+# Try to find the DataSpaces library
+#
+# This module defines the following variables:
+#
+#   DATASPACES_FOUND        - System has DataSpaces
+#   DATASPACES_INCLUDE_DIRS - The DataSpaces include directory
+#   DATASPACES_LIBRARIES    - Link these to use DataSpaces
+#
+# and the following imported targets:
+#   DataSpaces::DataSpaces - The DataSpaces library target
+#
+# You can also set the following variable to help guide the search:
+#   DATASPACES_ROOT - The install prefix for DataSpaces containing the
+#              include and lib folders
+#              Note: this can be set as a CMake variable or an
+#                    environment variable.  If specified as a CMake
+#                    variable, it will override any setting specified
+#                    as an environment variable.
 
-find_path(_dataspaces_root
-          NAMES include/dataspaces.h
-          HINTS $ENV{SEMS_DATASPACES_ROOT} $ENV{DATASPACES_ROOT} ${DATASPACES_ROOT} ${DATASPACES_DIR}
-          )
+if(NOT DATASPACES_FOUND)
+  if(NOT DATASPACES_ROOT)
+    if(NOT ("$ENV{DATASPACES_ROOT}" STREQUAL ""))
+      set(DATASPACES_ROOT "$ENV{DATASPACES_ROOT}")
+    else()
+      find_program(DSPACES_CONF dspaces_config)
+      get_filename_component(DATASPACES_ROOT "${DSPACES_CONF}/../.." ABSOLUTE)
+    endif()
+  endif()
+  if(DATASPACES_ROOT)
+    find_program(DSPACES_CONF dspaces_config ${DATASPACES_ROOT}/bin)
+    if(DSPACES_CONF)
+	  execute_process(COMMAND ${DSPACES_CONF} -l
+	    RESULT_VARIABLE RESULT_VAR
+	    OUTPUT_VARIABLE DSPACES_CONFIG_STRING
+	    ERROR_QUIET
+	    OUTPUT_STRIP_TRAILING_WHITESPACE)
+      string(REPLACE "-L"  " "   LINK_LIBS_ALL   ${DSPACES_CONFIG_STRING})
+      string(REPLACE " -l"  " "   LINK_LIBS_B   ${LINK_LIBS_ALL})
+      string(REPLACE " "  ";"   LINK_LIBS   ${LINK_LIBS_B})
+	  set(DATASPACES_LIBRARIES)
+	  set(DATASPACES_LIBRARY_HINT)
+	  foreach(LOOP_VAR ${LINK_LIBS})
+	    STRING(FIND ${LOOP_VAR} "-u" DEL_FLG)
+	    if(("${DEL_FLG}" EQUAL "-1"))
+	        STRING(FIND ${LOOP_VAR} "/" HINT_FLG)
+		if(NOT("${HINT_FLG}" EQUAL "-1"))
+		    list(APPEND DATASPACES_LIBRARY_HINT ${LOOP_VAR})
+		else()
+		    unset(LOCAL_LIBRARY CACHE)
+		    unset(LOCAL_LIBRARY-NOTFOUND CACHE)
+		    STRING(FIND ${LOOP_VAR} "stdc++" CPP_FLG)
+		    if("${CPP_FLG}" EQUAL "-1")
+		        find_library(LOCAL_LIBRARY NAMES "${LOOP_VAR}" HINTS ${DATASPACES_LIBRARY_HINT})
+		        if(LOCAL_LIBRARY)
+			    list(APPEND DATASPACES_LIBRARIES ${LOCAL_LIBRARY})
+		        else()
+			    list(APPEND DATASPACES_LIBRARIES ${LOOP_VAR})
+		        endif()
+		    endif()
+		endif()
+	      endif()
+  	    endforeach()
+	execute_process(COMMAND ${DSPACES_CONF} -v
+        RESULT_VARIABLE RESULT_VAR
+        OUTPUT_VARIABLE DATASPACES_VERSION
+        ERROR_QUIET
+        OUTPUT_STRIP_TRAILING_WHITESPACE)	
+    endif ()
+	
+    set(DATASPACES_INCLUDE_OPTS HINTS ${DATASPACES_ROOT}/include)
 
-find_library(_dataspaces_lib
-             NAMES libdspaces.a
-             HINTS ${_dataspaces_root}/lib ${_dataspaces_root}/lib64)
+  endif()
 
-find_library(_dart_lib
-             NAMES libdart.a
-             HINTS ${_dataspaces_root}/lib ${_dataspaces_root}/lib64)
+  find_path(DATASPACES_INCLUDE_DIR dataspaces.h ${DATASPACES_INCLUDE_OPTS})
+  find_library(DSPACES_LIBRARY dspaces HINTS ${DATASPACES_LIBRARY_HINT}) 
 
-find_library(_dscommon_lib
-             NAMES libdscommon.a
-             HINTS ${_dataspaces_root}/lib ${_dataspaces_root}/lib64)
-
-find_path(_dataspaces_include_dir
-          NAMES dataspaces.h
-          HINTS ${_dataspaces_root}/include)
-
-find_library(_ds_m_lib m)
-
-find_library(_ds_rt_lib rt)
-
-find_library(_ds_ibverbs_lib ibverbs)
-
-find_library(_ds_rdmacm_lib rdmacm)
-
-message(STATUS "rt_LIB=${_ds_rt_lib}")
-
-if ((NOT ${_dataspaces_root})
-        OR (NOT ${_dataspaces_lib})
-        OR (NOT ${_dart_lib})
-        OR (NOT ${_dscommon_lib})
-        OR (NOT ${_dataspaces_include_dir}))
-  set(_fail_msg "Could NOT find Dataspaces (set DATASPACES_DIR or DATASPACES_ROOT to point to install)")
-elseif ((NOT ${MPI_FOUND}) OR (NOT ${MPI_CXX_FOUND}))
-  set(_fail_msg "Could NOT find Dataspaces (missing MPI)")
-else()
-  set(_fail_msg "Could NOT find Dataspaces")
+  include(FindPackageHandleStandardArgs)
+  find_package_handle_standard_args(DataSpaces
+    FOUND_VAR DATASPACES_FOUND
+    VERSION_VAR DATASPACES_VERSION
+    REQUIRED_VARS DATASPACES_VERSION DATASPACES_INCLUDE_DIR 
+      DATASPACES_LIBRARIES DSPACES_LIBRARY
+  )
+  if(DATASPACES_FOUND)
+    if(DATASPACES_FOUND AND NOT TARGET DataSpaces::DataSpaces)
+      add_library(DataSpaces::DataSpaces UNKNOWN IMPORTED)
+      set_target_properties(DataSpaces::DataSpaces PROPERTIES
+       	IMPORTED_LOCATION             "${DSPACES_LIBRARY}"
+        INTERFACE_LINK_LIBRARIES      "${DATASPACES_LIBRARIES}"
+        INTERFACE_INCLUDE_DIRECTORIES "${DATASPACES_INCLUDE_DIR}"
+      )
+    endif()
+  endif()
 endif()
-
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Dataspaces ${_fail_msg}
-                                  _dataspaces_root
-                                  _dataspaces_lib
-                                  _dart_lib
-                                  _dscommon_lib
-                                  _dataspaces_include_dir
-                                  MPI_FOUND
-                                  MPI_CXX_FOUND
-                                  )
-
-
-
-add_library(Dataspaces::Common UNKNOWN IMPORTED)
-set_target_properties(Dataspaces::Common PROPERTIES
-                      IMPORTED_LOCATION ${_dscommon_lib}
-                      )
-
-add_library(Dataspaces::Dart UNKNOWN IMPORTED)
-set_target_properties(Dataspaces::Dart PROPERTIES
-                      IMPORTED_LOCATION ${_dart_lib}
-                      )
-
-add_library(Dataspaces::Dataspaces UNKNOWN IMPORTED)
-set_target_properties(Dataspaces::Dataspaces PROPERTIES
-                      IMPORTED_LOCATION ${_dataspaces_lib}
-                      INTERFACE_INCLUDE_DIRECTORIES ${_dataspaces_include_dir}
-                      INTERFACE_LINK_LIBRARIES "Dataspaces::Dart;Dataspaces::Common"
-                      )
-
-# target_link_libraries(Dataspaces::Dataspaces 
-#                      PUBLIC ${_ds_m_lib}
-#                      PUBLIC ${_ds_rt_lib}
-#                      PUBLIC ${_ds_ibverbs_lib}
-#                      PUBLIC ${_ds_rdmacm_lib}
-#                      )
-
-set(DATASPACES_DIR ${_dataspaces_root})
-
-mark_as_advanced(
-  _dataspaces_library
-  _dataspaces_include_dir
-)
-
-
