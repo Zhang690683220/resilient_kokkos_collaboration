@@ -28,6 +28,7 @@ if (KR_ENABLE_STDIO)
   target_sources(resilience_tests PRIVATE
                  TestViewCheckpoint.cpp
                  )
+                 find_package(Dataspaces REQUIRED)
 endif()
 
 
