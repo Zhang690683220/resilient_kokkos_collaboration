@@ -33,7 +33,7 @@ namespace KokkosResilience {
         //std::string sFullPath = KokkosIOAccessor::resolve_path( file_path, KokkosResilience::DataspacesSpace::s_default_path );
         // Mismatch: Dataspaces have no concept about file handle
         // in other word, dataspaces file don't need to be open or close as long as server runs
-        return 0;
+        return 1;
     }
 
     size_t KokkosDataspacesAccessor::ReadFile_impl(void * dest, const size_t dest_size) {
