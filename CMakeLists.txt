@@ -151,11 +151,11 @@ endif()
 
 if (KR_ENABLE_DATASPACES)
   install(FILES
-          ${CMAKE_MODULE_PATH}/FindDataspaces.cmake
+          ${CMAKE_MODULE_PATH}/FindDataSpaces.cmake
           DESTINATION ${CMAKE_INSTALL_PREFIX}/cmake/Modules )
 
   # Need to install/export Dataspaces find module for downstream dependencies
-  configure_file(cmake/Modules/FindDataspaces.cmake Modules/FindDataspaces.cmake COPYONLY)
+  configure_file(cmake/Modules/FindDataSpaces.cmake Modules/FindDataSpaces.cmake COPYONLY)
 endif()
 
 configure_file(src/resilience/config/Config.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/src/resilience/config/Config.hpp @ONLY)
