@@ -7,8 +7,6 @@ FetchContent_Declare(googletest
 
 FetchContent_MakeAvailable(googletest)
 
-find_package(Dataspaces REQUIRED)
-
 add_executable(resilience_tests
                TestMain.cpp
                TestResilience.cpp

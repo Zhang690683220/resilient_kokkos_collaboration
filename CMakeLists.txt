@@ -69,10 +69,9 @@ if (KR_ENABLE_HDF5)
 endif()
 
 if (KR_ENABLE_DATASPACES)
-   find_package(Dataspaces REQUIRED)
-   target_link_libraries(resilience PUBLIC Dataspaces::Dataspaces)
+   find_package(DataSpaces REQUIRED)
+   target_link_libraries(resilience PUBLIC DataSpaces::DataSpaces)
    target_compile_definitions(resilience PUBLIC KR_ENABLE_DATASPACES)
-   message(STATUS "Dataspaces=${Dataspaces}")
 endif()
 
 # MPI requirement
