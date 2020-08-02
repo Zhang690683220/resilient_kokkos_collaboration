@@ -25,6 +25,8 @@
 #                    variable, it will override any setting specified
 #                    as an environment variable.
 
+find_package(MPI)
+
 if(NOT DATASPACES_FOUND)
   if(NOT DATASPACES_ROOT)
     if(NOT ("$ENV{DATASPACES_ROOT}" STREQUAL ""))
@@ -91,6 +93,9 @@ if(NOT DATASPACES_FOUND)
   )
   if(DATASPACES_FOUND)
     if(DATASPACES_FOUND AND NOT TARGET DataSpaces::DataSpaces)
+    message(STATUS "DSPACES_LIBRARY=${DSPACES_LIBRARY}") 
+    message(STATUS "DATASPACES_LIBRARIES=${DATASPACES_LIBRARIES}") 
+    message(STATUS "DATASPACES_INCLUDE_DIR=${DATASPACES_INCLUDE_DIR}")
       add_library(DataSpaces::DataSpaces UNKNOWN IMPORTED)
       set_target_properties(DataSpaces::DataSpaces PROPERTIES
        	IMPORTED_LOCATION             "${DSPACES_LIBRARY}"
