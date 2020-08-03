@@ -17,6 +17,9 @@ namespace KokkosResilience {
          }
          sFullPath += path;
       }
+      std::cout<< "path=" << path << std::endl;
+      std::cout<< "default_=" << default_ << std::endl;
+      std::cout<< "sFullPath=" << sFullPath << std::endl;
 
       return sFullPath;
 

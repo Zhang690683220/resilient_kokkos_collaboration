@@ -6,6 +6,7 @@
 #include <cstring>
 #include <string>
 #include <iosfwd>
+#include <iostream>
 #include <typeinfo>
 
 #include <Kokkos_Core_fwd.hpp>
