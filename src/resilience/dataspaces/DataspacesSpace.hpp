@@ -23,7 +23,7 @@ class Counter {
 public:
 	Counter() { ++_count; }
 	~Counter() { --_count; }
-	static int current_count() const { return _count; }
+	static int current_count() { return _count; }
 private:
 	static int _count;
 };
