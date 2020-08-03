@@ -31,7 +31,7 @@ namespace KokkosResilience {
         appid = str_hash(time_str+pid_str) % std::numeric_limits<int>::max();
         MPI_Comm_size( MPI_COMM_WORLD, &mpi_size );
         MPI_Comm_rank( MPI_COMM_WORLD, &mpi_rank);
-        dspaces_init(mpi_size, 1, &gcomm, NULL); // TODO: How to define appid ?
+        dspaces_init(mpi_size, appid, &gcomm, NULL); // TODO: How to define appid ?
         return 0;
     }
 
