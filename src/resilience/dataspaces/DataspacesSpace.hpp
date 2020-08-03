@@ -5,6 +5,9 @@
 #include <string>
 #include <iosfwd>
 #include <typeinfo>
+#include <ctime>
+#include <limits>
+#include <unistd.h>
 
 #include <Kokkos_Core_fwd.hpp>
 #include <Kokkos_Concepts.hpp>
@@ -22,6 +25,7 @@ public:
 
     size_t rank;           // rank of the dataset
     size_t version;         // version of the dataset
+    int appid;
     int mpi_size;
     int mpi_rank;
     MPI_Comm gcomm = MPI_COMM_WORLD;
@@ -31,11 +35,13 @@ public:
     KokkosDataspacesAccessor() : KokkosIOAccessor(),
                                  rank(1),
                                  version(1),
+                                 appid(0),
                                  mpi_size(1),
                                  mpi_rank(0) {}
     KokkosDataspacesAccessor(const size_t size, const std::string & path ) : KokkosIOAccessor(size, path, true),
                                                                              rank(1),
                                                                              version(1),
+                                                                             appid(0),
                                                                              mpi_size(1),
                                                                              mpi_rank(0) {}
     KokkosDataspacesAccessor( const KokkosDataspacesAccessor & rhs ) = default;

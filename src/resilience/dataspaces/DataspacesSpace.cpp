@@ -8,9 +8,15 @@ namespace KokkosResilience {
 
     int KokkosDataspacesAccessor::initialize(const std::string & filepath) {
         file_path = filepath;
+        time_t rawtime;
+        time(&rawtime);
+        std::string time_str (ctime(&rawtime));
+        std::string pid_str (std::getpid());
+        std::hash<std::string> str_hash;
+        appid = str_hash(time_str+pid_str) % std::numeric_limits<int>::max();
         MPI_Comm_size( MPI_COMM_WORLD, &mpi_size );
         MPI_Comm_rank( MPI_COMM_WORLD, &mpi_rank);
-        dspaces_init(mpi_size, 1, &gcomm, NULL); // TODO: How to define appid ?
+        dspaces_init(mpi_size, appid, &gcomm, NULL); // TODO: How to define appid ?
         return 0;
     }
 
