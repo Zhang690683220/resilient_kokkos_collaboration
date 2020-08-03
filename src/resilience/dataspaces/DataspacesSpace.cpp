@@ -105,7 +105,7 @@ namespace KokkosResilience {
 
     void KokkosDataspacesAccessor::finalize() {
       close_file();
-      atexit(dspaces_finalize());
+      atexit(dspaces_finalize);
     }
 
     std::string DataspacesSpace::s_default_path = "./";
