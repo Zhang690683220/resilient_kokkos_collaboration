@@ -1,14 +1,12 @@
 #include "Kokkos_Core.hpp"
 #include "DataspacesSpace.hpp"
 #include "Kokkos_Macros.hpp"
-#include <iostream>
 #include "mpi.h"
 
 namespace KokkosResilience {
 
     int KokkosDataspacesAccessor::initialize(const std::string & filepath) {
         file_path = filepath;
-        std::cout<<"count:"<< counter.current_count<<std::endl;
         time_t rawtime;
         time(&rawtime);
         std::string time_str (ctime(&rawtime));
@@ -27,7 +25,6 @@ namespace KokkosResilience {
     int KokkosDataspacesAccessor::initialize( const size_t size_, const std::string & filepath) {
         data_size = size_;
         file_path = filepath;
-        std::cout<<"count:"<< counter.current_count<<std::endl;
         time_t rawtime;
         time(&rawtime);
         std::string time_str (ctime(&rawtime));
