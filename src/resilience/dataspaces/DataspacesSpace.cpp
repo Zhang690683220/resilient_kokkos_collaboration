@@ -11,7 +11,7 @@ namespace KokkosResilience {
         time_t rawtime;
         time(&rawtime);
         std::string time_str (ctime(&rawtime));
-        std::string pid_str ((int)getpid());
+        std::string pid_str = std::to_string((int)getpid());
         std::hash<std::string> str_hash;
         appid = str_hash(time_str+pid_str) % std::numeric_limits<int>::max();
         MPI_Comm_size( MPI_COMM_WORLD, &mpi_size );
