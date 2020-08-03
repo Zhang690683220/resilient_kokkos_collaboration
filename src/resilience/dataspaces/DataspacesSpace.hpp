@@ -84,12 +84,8 @@ public:
     virtual ~KokkosDataspacesAccessor() {
     }
 
-private:
-    static bool ds_init;
-    
 };
 
-    KokkosDataspacesAccessor::ds_init = false;
 
 /// \class DataspacesSpace
 /// \brief Memory management for Dataspaces

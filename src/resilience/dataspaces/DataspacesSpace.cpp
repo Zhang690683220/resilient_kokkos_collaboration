@@ -1,7 +1,6 @@
 #include "Kokkos_Core.hpp"
 #include "DataspacesSpace.hpp"
 #include "Kokkos_Macros.hpp"
-#include <iostream>
 
 #include "mpi.h"
 
@@ -9,38 +8,35 @@ namespace KokkosResilience {
 
     int KokkosDataspacesAccessor::initialize(const std::string & filepath) {
         file_path = filepath;
-        std::cout<< "ds_init" << ds_init << std::endl;
-        //if(!ds_init) {
-            time_t rawtime;
-            time(&rawtime);
-            std::string time_str (ctime(&rawtime));
-            std::string pid_str = std::to_string((int)getpid());
-            std::hash<std::string> str_hash;
-            appid = str_hash(time_str+pid_str) % std::numeric_limits<int>::max();
-            MPI_Comm_size( MPI_COMM_WORLD, &mpi_size );
-            MPI_Comm_rank( MPI_COMM_WORLD, &mpi_rank);
-            dspaces_init(mpi_size, appid, &gcomm, NULL); // TODO: How to define appid ?
-            ds_init = true;
-        //}
+        time_t rawtime;
+        time(&rawtime);
+        std::string time_str (ctime(&rawtime));
+        std::string pid_str = std::to_string((int)getpid());
+        std::hash<std::string> str_hash;
+        appid = str_hash(time_str+pid_str) % std::numeric_limits<int>::max();
+        MPI_Comm_size( MPI_COMM_WORLD, &mpi_size );
+        MPI_Comm_rank( MPI_COMM_WORLD, &mpi_rank);
+        MPI_Bcast(&appid, 1, MPI_INT, 0, gcomm);
+        MPI_Barrier(gcomm);
+        dspaces_init(mpi_size, appid, &gcomm, NULL); // TODO: How to define appid ?
+
         return 0;
     }
 
     int KokkosDataspacesAccessor::initialize( const size_t size_, const std::string & filepath) {
         data_size = size_;
         file_path = filepath;
-        std::cout<< "ds_init" << ds_init << std::endl;
-        //if(!ds_init) {
-            time_t rawtime;
-            time(&rawtime);
-            std::string time_str (ctime(&rawtime));
-            std::string pid_str = std::to_string((int)getpid());
-            std::hash<std::string> str_hash;
-            appid = str_hash(time_str+pid_str) % std::numeric_limits<int>::max();
-            MPI_Comm_size( MPI_COMM_WORLD, &mpi_size );
-            MPI_Comm_rank( MPI_COMM_WORLD, &mpi_rank);
-            dspaces_init(mpi_size, appid, &gcomm, NULL); // TODO: How to define appid ?
-            ds_init = true;
-        //}
+        time_t rawtime;
+        time(&rawtime);
+        std::string time_str (ctime(&rawtime));
+        std::string pid_str = std::to_string((int)getpid());
+        std::hash<std::string> str_hash;
+        appid = str_hash(time_str+pid_str) % std::numeric_limits<int>::max();
+        MPI_Comm_size( MPI_COMM_WORLD, &mpi_size );
+        MPI_Comm_rank( MPI_COMM_WORLD, &mpi_rank);
+        MPI_Bcast(&appid, 1, MPI_INT, 0, gcomm);
+        MPI_Barrier(gcomm);
+        dspaces_init(mpi_size, appid, &gcomm, NULL); // TODO: How to define appid ?
         return 0;
     }
 
