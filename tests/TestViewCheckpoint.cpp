@@ -198,7 +198,7 @@ namespace {
       
       for (int i = 0; i < dim0; i++) {
         for (int j = 0; j < dim1; j++) {
-          printf("i:%d, j:%d, h_view_2= %lf \n", i, j,h_view_2(i,j) );
+          //printf("i:%d, j:%d, h_view_2= %lf \n", i, j,h_view_2(i,j) );
           ASSERT_EQ(h_view_2(i,j), i + j);
         }
       }
