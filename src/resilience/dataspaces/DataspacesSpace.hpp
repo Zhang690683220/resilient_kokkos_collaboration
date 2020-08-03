@@ -83,6 +83,10 @@ public:
    
     virtual ~KokkosDataspacesAccessor() {
     }
+
+private:
+
+    bool ds_init = false;
 };
 
 /// \class DataspacesSpace
