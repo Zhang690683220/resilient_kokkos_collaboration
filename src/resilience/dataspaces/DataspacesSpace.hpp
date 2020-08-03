@@ -19,16 +19,6 @@
 
 namespace KokkosResilience {
 
-class Counter {
-public:
-	Counter() { ++_count; }
-	~Counter() { --_count; }
-	static int current_count() { return _count; }
-private:
-	static int _count;
-};
-
-int Counter::_count=0;
 
 class KokkosDataspacesAccessor : public KokkosIOAccessor {
 
@@ -94,9 +84,6 @@ public:
    
     virtual ~KokkosDataspacesAccessor() {
     }
-
-    private:
-        Counter counter;
 
 };
 
