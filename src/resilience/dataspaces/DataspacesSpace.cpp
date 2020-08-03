@@ -54,9 +54,9 @@ namespace KokkosResilience {
         if (open_file(KokkosIOAccessor::READ_FILE)) {
             std::string sFullPath = KokkosIOAccessor::resolve_path( file_path, KokkosResilience::DataspacesSpace::s_default_path );
             size_t lb[1] = {0}, ub[1] = {dest_size-1};
-            dspaces_lock_on_read(sFullPath.c_str(), NULL);
+            dspaces_lock_on_read(sFullPath.c_str(), &gcomm);
             int err = dspaces_get(sFullPath.c_str(), 1, 1, 1, lb, ub, dest);
-            dspaces_unlock_on_read(sFullPath.c_str(), NULL);
+            dspaces_unlock_on_read(sFullPath.c_str(), &gcomm);
             if(err == 0) {
                 // Actual use with high-dimensional get()
                 dataRead = dest_size; 
@@ -74,11 +74,11 @@ namespace KokkosResilience {
         if (open_file(KokkosIOAccessor::WRITE_FILE)) {
             std::string sFullPath = KokkosIOAccessor::resolve_path( file_path, KokkosResilience::DataspacesSpace::s_default_path );
             size_t lb[1] = {0}, ub[1] = {src_size-1};
-            dspaces_lock_on_write(sFullPath.c_str(), NULL);
+            dspaces_lock_on_write(sFullPath.c_str(), &gcomm);
             int err = dspaces_put(sFullPath.c_str(), 1, 1, 1, lb, ub, src);
             /* enable if counting for exact time to put data to server */
             //dspaces_put_sync();
-            dspaces_unlock_on_write(sFullPath.c_str(), NULL);
+            dspaces_unlock_on_write(sFullPath.c_str(), &gcomm);
             if(err == 0) {
                 m_written = src_size;
             } else {
