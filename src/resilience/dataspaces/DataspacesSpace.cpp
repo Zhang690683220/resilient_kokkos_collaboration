@@ -10,7 +10,7 @@ namespace KokkosResilience {
     int KokkosDataspacesAccessor::initialize(const std::string & filepath) {
         file_path = filepath;
         std::cout<< "ds_init" << ds_init << std::endl;
-        if(!ds_init) {
+        //if(!ds_init) {
             time_t rawtime;
             time(&rawtime);
             std::string time_str (ctime(&rawtime));
@@ -21,7 +21,7 @@ namespace KokkosResilience {
             MPI_Comm_rank( MPI_COMM_WORLD, &mpi_rank);
             dspaces_init(mpi_size, appid, &gcomm, NULL); // TODO: How to define appid ?
             ds_init = true;
-        }
+        //}
         return 0;
     }
 
@@ -29,7 +29,7 @@ namespace KokkosResilience {
         data_size = size_;
         file_path = filepath;
         std::cout<< "ds_init" << ds_init << std::endl;
-        if(!ds_init) {
+        //if(!ds_init) {
             time_t rawtime;
             time(&rawtime);
             std::string time_str (ctime(&rawtime));
@@ -40,7 +40,7 @@ namespace KokkosResilience {
             MPI_Comm_rank( MPI_COMM_WORLD, &mpi_rank);
             dspaces_init(mpi_size, appid, &gcomm, NULL); // TODO: How to define appid ?
             ds_init = true;
-        }
+        //}
         return 0;
     }
 
