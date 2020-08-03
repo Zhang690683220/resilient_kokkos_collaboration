@@ -85,7 +85,7 @@ public:
     }
 
 private:
-    bool ds_init;
+    static bool ds_init;
     
 };
 
