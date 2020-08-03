@@ -194,16 +194,14 @@ namespace {
       Kokkos::deep_copy( h_view_2, cp_view );
       Kokkos::fence();
 
-      printf("*****DEBUG1\n");
+
       
       for (int i = 0; i < dim0; i++) {
         for (int j = 0; j < dim1; j++) {
-          //printf("i:%d, j:%d, h_view_2= %lf \n", i, j,h_view_2(i,j) );
           ASSERT_EQ(h_view_2(i,j), i + j);
         }
       }
 
-      printf("*****DEBUG2\n");
       
       
     }
