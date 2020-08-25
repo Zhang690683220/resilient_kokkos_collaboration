@@ -1,0 +1,24 @@
+[
+    {
+        "name":"1D_regular_test",
+        "Layout_Config":{
+            "rank":1,
+            "layout":"REGULAR",
+            "version":1,
+            "element_size":1,
+            "lower_bbox":["0","0","0","0"],
+            "upper_bbox":["{DATA_SIZE}-1","0","0","0"]
+        }
+    },
+    {
+        "name":"2D_double_regular_test",
+        "Layout_Config":{
+            "rank":2,
+            "layout":"REGULAR",
+            "version":1,
+            "element_size":8,
+            "lower_bbox":["0","0","0","0"],
+            "upper_bbox":["99","99","0","0"]
+        }
+    }
+]

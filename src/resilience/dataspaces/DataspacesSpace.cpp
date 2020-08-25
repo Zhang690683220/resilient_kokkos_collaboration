@@ -5,26 +5,94 @@
 
 namespace KokkosResilience {
 
-    int KokkosDataspacesAccessor::initialize(const std::string & filepath) {
-        file_path = filepath;
-        time_t rawtime;
-        time(&rawtime);
-        std::string time_str (ctime(&rawtime));
-        std::string pid_str = std::to_string((int)getpid());
-        std::hash<std::string> str_hash;
-        appid = str_hash(time_str+pid_str) % std::numeric_limits<int>::max();
-        MPI_Comm_size( MPI_COMM_WORLD, &mpi_size );
-        MPI_Comm_rank( MPI_COMM_WORLD, &mpi_rank);
-        MPI_Bcast(&appid, 1, MPI_INT, 0, gcomm);
-        MPI_Barrier(gcomm);
-        dspaces_init(mpi_size, appid, &gcomm, NULL); // TODO: How to define appid ?
-
-        return 0;
+    KokkosDataspacesConfigurationManager::OperationPrimitive * KokkosDataspacesConfigurationManager::resolve_variable(
+                      std::string data, std::map<const std::string, size_t> & var_map ) {
+   
+      size_t val = var_map[data];
+      //printf("variable [%s] returned %d\n", data.c_str(), val);
+      return new KokkosDataspacesConfigurationManager::OperationPrimitive(val);
     }
+
+    KokkosDataspacesConfigurationManager::OperationPrimitive *
+    KokkosDataspacesConfigurationManager::resolve_arithmetic( std::string data,
+                                                            std::map<const std::string, size_t> & var_map ) {
+      KokkosDataspacesConfigurationManager::OperationPrimitive * lhs_op = nullptr;
+      for ( size_t n = 0; n< data.length(); ) {
+         //printf(" resolve_arithmetic: %d \n", n);
+         char c = data.at(n);
+         if ( c >= 0x30 && c <= 0x39 ) {
+            std::string cur_num = "";
+            while ( c >= 0x30 && c <= 0x39 ) {
+               cur_num += data.substr(n,1); n++;
+               if (n < data.length()) {
+                  c = data.at(n);
+               } else {
+                  break;
+               }
+            }
+            lhs_op = new KokkosDataspacesConfigurationManager::OperationPrimitive((std::atoi(cur_num.c_str())));
+         } else if (c == '(') {
+            size_t end_pos = data.find_first_of(')',n);
+            if (end_pos >= 0 && end_pos < data.length()) {
+              // printf("calling resolving arithmetic: %s \n", data.substr(n+1,end_pos-n-1).c_str());
+               lhs_op = resolve_arithmetic ( data.substr(n+1,end_pos-n-1), var_map );
+            } else {
+               printf("syntax error in arithmetic: %s, at %d \n", data.c_str(), n);
+               return nullptr;
+            }
+            n = end_pos+1;
+         } else if (c == '{') {
+            size_t end_pos = data.find_first_of('}',n);
+            if (end_pos >= 0 && end_pos < data.length()) {
+              //  printf("resolving variable: %s \n", data.substr(n+1,end_pos-n-1).c_str());
+               lhs_op = resolve_variable( data.substr(n+1,end_pos-n-1), var_map );
+            } else {
+               printf("syntax error in variable name: %s, at %d \n", data.c_str(), n);
+               return nullptr;
+            }
+            n = end_pos+1;
+         } else {
+          //  printf("parsing rhs: %s \n", data.substr(n,1).c_str());
+            KokkosDataspacesConfigurationManager::OperationPrimitive * op =
+                        KokkosDataspacesConfigurationManager::OperationPrimitive::parse_operator(data.substr(n,1),lhs_op);
+            n++;
+            op->set_right_opp( resolve_arithmetic ( data.substr(n), var_map ) );
+            return op;
+         }
+      
+      }
+      return lhs_op;
+   
+    }
+
+    void KokkosDataspacesConfigurationManager::set_param_list( boost::property_tree::ptree l_config, int data_scope,
+                       std::string param_name, uint64_t output [], std::map<const std::string, size_t> & var_map ) {
+    //  printf("set_param_list: %s \n", param_name.c_str());
+      for ( auto & param_list : l_config ) {
+          if ( param_list.first == param_name ) {
+              int n = 0;
+              for (auto & param : param_list.second ) {
+                // printf("processing param list: %s\n", param.second.get_value<std::string>().c_str());
+                 KokkosDataspacesConfigurationManager::OperationPrimitive * opp = resolve_arithmetic( param.second.get_value<std::string>(), var_map );
+                 if (opp != nullptr) {
+                     output[n++] = opp->evaluate();
+                     delete opp;
+                 } else {
+                     output[n++] = 0;
+                 }
+              }
+            //  printf("param_list resolved [%s]: %d,%d,%d,%d \n", param_name.c_str(), output[0], output[1], output[2], output[3]);
+              break;
+          }
+      }
+    }
+
+
 
     int KokkosDataspacesAccessor::initialize( const size_t size_, const std::string & filepath) {
         data_size = size_;
         file_path = filepath;
+        ub[0] = data_size-1;
         time_t rawtime;
         time(&rawtime);
         std::string time_str (ctime(&rawtime));
@@ -35,7 +103,45 @@ namespace KokkosResilience {
         MPI_Comm_rank( MPI_COMM_WORLD, &mpi_rank);
         MPI_Bcast(&appid, 1, MPI_INT, 0, gcomm);
         MPI_Barrier(gcomm);
-        dspaces_init(mpi_size, appid, &gcomm, NULL); // TODO: How to define appid ?
+        dspaces_init(mpi_size, appid, &gcomm, NULL); 
+        return 0;
+    }
+
+    int KokkosDataspacesAccessor::initialize(const size_t size_, const std::string & filepath,
+                                                KokkosDataspacesConfigurationManager config_) {
+        data_size = size_;
+        file_path = filepath;
+        for (int i = 0; i < 4; i++) {
+            lb[i] = 0;
+            ub[i] = 0;
+        }
+
+        boost::property_tree::ptree l_config = config_.get_config()->get_child("Layout_Config");
+        std::map<const std::string, size_t> var_list;
+        time_t rawtime;
+        time(&rawtime);
+        std::string time_str (ctime(&rawtime));
+        std::string pid_str = std::to_string((int)getpid());
+        std::hash<std::string> str_hash;
+        appid = str_hash(time_str+pid_str) % std::numeric_limits<int>::max();
+        MPI_Comm_size( MPI_COMM_WORLD, &mpi_size );
+        MPI_Comm_rank( MPI_COMM_WORLD, &mpi_rank);
+        MPI_Bcast(&appid, 1, MPI_INT, 0, gcomm);
+        MPI_Barrier(gcomm);
+
+        var_list["DATA_SIZE"] = data_size;
+        var_list["MPI_SIZE"] = (size_t)mpi_size;
+        var_list["MPI_RANK"] = (size_t)mpi_rank;
+        rank = l_config.get<int>("rank");
+        version = l_config.get<int>("version");
+        elem_size = l_config.get<int>("element_size");
+        config_.set_param_list( l_config, 0, "lower_bbox", lb, var_list);
+        config_.set_param_list( l_config, 0, "upper_bbox", ub, var_list);
+
+        m_layout = config_.get_layout();
+        m_is_initialized = true;
+        dspaces_init(mpi_size, appid, &gcomm, NULL); 
+
         return 0;
     }
 
@@ -57,9 +163,9 @@ namespace KokkosResilience {
         char* ptr = (char*)dest;
         if (open_file(KokkosIOAccessor::READ_FILE)) {
             std::string sFullPath = KokkosIOAccessor::resolve_path( file_path, KokkosResilience::DataspacesSpace::s_default_path );
-            size_t lb[1] = {0}, ub[1] = {dest_size-1};
+            //size_t lb[1] = {0}, ub[1] = {dest_size-1};
             dspaces_lock_on_read(sFullPath.c_str(), &gcomm);
-            int err = dspaces_get(sFullPath.c_str(), 1, 1, 1, lb, ub, dest);
+            int err = dspaces_get(sFullPath.c_str(), version, elem_size, rank, lb, ub, dest);
             dspaces_unlock_on_read(sFullPath.c_str(), &gcomm);
             if(err == 0) {
                 // Actual use with high-dimensional get()
@@ -77,9 +183,9 @@ namespace KokkosResilience {
         char* ptr = (char*)src;
         if (open_file(KokkosIOAccessor::WRITE_FILE)) {
             std::string sFullPath = KokkosIOAccessor::resolve_path( file_path, KokkosResilience::DataspacesSpace::s_default_path );
-            size_t lb[1] = {0}, ub[1] = {src_size-1};
+            //size_t lb[1] = {0}, ub[1] = {src_size-1};
             dspaces_lock_on_write(sFullPath.c_str(), &gcomm);
-            int err = dspaces_put(sFullPath.c_str(), 1, 1, 1, lb, ub, src);
+            int err = dspaces_put(sFullPath.c_str(), version, elem_size, rank, lb, ub, src);
             /* enable if counting for exact time to put data to server */
             //dspaces_put_sync();
             dspaces_unlock_on_write(sFullPath.c_str(), &gcomm);
@@ -118,9 +224,14 @@ namespace KokkosResilience {
 
         KokkosDataspacesAccessor acc = m_accessor_map[path];
         if(!acc.is_initialized() ) {
-
             // TODO: use boost::ptree to provide a constructor with config manager
-            acc.initialize(arg_alloc_size, path);
+            boost::property_tree::ptree pConfig = KokkosIOConfigurationManager::get_instance()->get_config(path);
+            if (pConfig.size() > 0) {
+                acc.initialize(arg_alloc_size, path, KokkosDataspacesConfigurationManager (pConfig) );
+            }
+            else {
+                acc.initialize(arg_alloc_size, path);
+            }
         }
         m_accessor_map[path] = acc;
         KokkosDataspacesAccessor * pAcc = new KokkosDataspacesAccessor(acc, arg_alloc_size);

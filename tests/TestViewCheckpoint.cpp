@@ -153,6 +153,61 @@ namespace {
     }
     
   };
+
+  template < typename ExecSpace, typename CpFileSpace >
+  struct TestFSConfigDouble {
+    
+    typedef typename ExecSpace::memory_space     memory_space;
+    
+    static void test_view_chkpt(std::string file_name, int dim0, int dim1) {
+      
+      typedef Kokkos::View<double**,memory_space> Rank2ViewType;
+      Rank2ViewType view_2;
+      view_2 = Rank2ViewType("memory_view_2", dim0, dim1);
+      typename Rank2ViewType::HostMirror h_view_2 = Kokkos::create_mirror(view_2);
+      
+      typedef CpFileSpace cp_file_space_type;
+      cp_file_space_type::set_default_path("./data");
+      Kokkos::View<double**,cp_file_space_type> cp_view(file_name, dim0, dim1);
+      
+      Kokkos::parallel_for (Kokkos::RangePolicy<ExecSpace>(0, dim0), KOKKOS_LAMBDA (const int i) {
+        for (int j = 0; j < dim1; j++) {
+          view_2(i,j) = i * dim0 + j;
+        }
+      });
+      Kokkos::deep_copy( h_view_2, view_2 );
+#ifdef KR_ENABLE_HDF5_PARALLEL
+      MPI_Barrier(MPI_COMM_WORLD);
+#endif
+      
+      // host_space to ExecSpace
+      Kokkos::deep_copy( cp_view, h_view_2 );
+      Kokkos::fence();
+      
+      Kokkos::parallel_for (Kokkos::RangePolicy<ExecSpace>(0, dim0), KOKKOS_LAMBDA (const int i) {
+        for (int j = 0; j < dim1; j++) {
+          view_2(i,j) = 0;
+        }
+      });
+      Kokkos::deep_copy( h_view_2, view_2 );
+      
+      // ExecSpace to host_space
+      Kokkos::deep_copy( h_view_2, cp_view );
+      Kokkos::fence();
+
+#ifdef KR_ENABLE_HDF5_PARALLEL
+      MPI_Barrier(MPI_COMM_WORLD);
+#endif
+      
+      for (int i = 0; i < dim0; i++) {
+        for (int j = 0; j < dim1; j++) {
+          ASSERT_EQ(h_view_2(i,j), i * dim0 + j);
+        }
+      }
+      
+    }
+    
+  };
   
   
   template < typename ExecSpace, typename CpFileSpace >
@@ -275,10 +330,13 @@ TYPED_TEST( TestViewCheckpoint, dataspaces )
   using exec_space = typename TestFixture::exec_space;
 
   TestFSDeepCopy< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt("./data/cp_view.ds",10,10);
-  printf("*****DEBUG3\n");
   TestFSDeepCopy< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt("./data/cp_view1.ds",100,100);
   
   TestFSDeepCopy< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt("./data/cp_view2.ds",10000,10000);
+
+  TestFSConfig< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt("1D_regular_test",10,10);
+
+  TestFSConfigDouble< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt("2D_double_regular_test",100,100);
 
   for (int n = 0; n < 10; n++) {
     TestCheckPointView< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt(n, "view", 10,10,"./data/dataspaces/");
