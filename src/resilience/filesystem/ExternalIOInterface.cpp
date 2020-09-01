@@ -1,4 +1,6 @@
 
+#include <regex>
+#include <cstdlib>
 #include "Kokkos_Core.hpp"
 #include "ExternalIOInterface.hpp"
 
@@ -20,6 +22,19 @@ namespace KokkosResilience {
 
 
       return sFullPath;
+
+   }
+
+   std::string KokkosIOAccessor::get_timestep( std::string path, size_t &ts) {
+
+      std::smatch result;
+      std::regex pattern("/[Tt](\\d+)/?");
+      if (std::regex_search(path, result, pattern)) {
+         ts = std::strtoull(result[1].str().c_str(), NULL, 0);
+         return result.prefix().str();
+      }
+
+      return "";
 
    }
 

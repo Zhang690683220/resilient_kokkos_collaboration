@@ -2,6 +2,7 @@
 #include "DataspacesSpace.hpp"
 #include "Kokkos_Macros.hpp"
 #include "mpi.h"
+#include <iostream>
 
 namespace KokkosResilience {
 
@@ -89,9 +90,10 @@ namespace KokkosResilience {
 
 
 
-    int KokkosDataspacesAccessor::initialize( const size_t size_, const std::string & filepath) {
+    int KokkosDataspacesAccessor::initialize( const size_t size_, const std::string & filepath, const size_t version_) {
         data_size = size_;
         file_path = filepath;
+        version = version_;
         ub[0] = data_size-1;
         time_t rawtime;
         time(&rawtime);
@@ -107,10 +109,11 @@ namespace KokkosResilience {
         return 0;
     }
 
-    int KokkosDataspacesAccessor::initialize(const size_t size_, const std::string & filepath,
+    int KokkosDataspacesAccessor::initialize(const size_t size_, const std::string & filepath, const size_t version_,
                                                 KokkosDataspacesConfigurationManager config_) {
         data_size = size_;
         file_path = filepath;
+        version = version_;
         for (int i = 0; i < 4; i++) {
             lb[i] = 0;
             ub[i] = 0;
@@ -225,12 +228,20 @@ namespace KokkosResilience {
         KokkosDataspacesAccessor acc = m_accessor_map[path];
         if(!acc.is_initialized() ) {
             // TODO: use boost::ptree to provide a constructor with config manager
-            boost::property_tree::ptree pConfig = KokkosIOConfigurationManager::get_instance()->get_config(path);
+            size_t timestep = 0;
+            std::string path_prefix = KokkosIOAccessor::get_timestep(path, timestep);
+            boost::property_tree::ptree pConfig;
+            if (path_prefix.compare("")) {
+                pConfig = KokkosIOConfigurationManager::get_instance()->get_config(path);
+            } else {
+                pConfig = KokkosIOConfigurationManager::get_instance()->get_config(path_prefix);
+            }
+            
             if (pConfig.size() > 0) {
-                acc.initialize(arg_alloc_size, path, KokkosDataspacesConfigurationManager (pConfig) );
+                acc.initialize(arg_alloc_size, path, timestep, KokkosDataspacesConfigurationManager (pConfig) );
             }
             else {
-                acc.initialize(arg_alloc_size, path);
+                acc.initialize(arg_alloc_size, path, timestep);
             }
         }
         m_accessor_map[path] = acc;

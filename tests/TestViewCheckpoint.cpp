@@ -336,7 +336,8 @@ TYPED_TEST( TestViewCheckpoint, dataspaces )
 
   TestFSConfig< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt("1D_regular_test",10,10);
 
-  TestFSConfigDouble< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt("2D_double_regular_test",100,100);
+  TestFSConfigDouble< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt("2D_double_regular_test/t100",100,100);
+  TestFSConfigDouble< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt("2D_double_regular_test/t999",100,100);
 
   for (int n = 0; n < 10; n++) {
     TestCheckPointView< exec_space, KokkosResilience::DataspacesSpace >::test_view_chkpt(n, "view", 10,10,"./data/dataspaces/");

@@ -66,6 +66,7 @@ public:
    }
 
    static std::string resolve_path( std::string path, std::string default_ );
+   static std::string get_timestep( std::string path, size_t &ts);
    static void transfer_from_host ( void * dst, const void * src, size_t size_ );
    static void transfer_to_host ( void * dst, const void * src, size_t size_ );
    static void create_empty_file ( void * dst );

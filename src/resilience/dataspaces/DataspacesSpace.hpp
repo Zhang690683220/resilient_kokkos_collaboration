@@ -161,7 +161,7 @@ public:
 
     KokkosDataspacesAccessor() : KokkosIOAccessor(),
                                  rank(1),
-                                 version(1),
+                                 version(0),
                                  appid(0),
                                  elem_size(1),
                                  lb{0,0,0,0},
@@ -173,7 +173,7 @@ public:
                                  m_is_initialized(false) {}
     KokkosDataspacesAccessor(const size_t size, const std::string & path ) : KokkosIOAccessor(size, path, true),
                                                                              rank(1),
-                                                                             version(1),
+                                                                             version(0),
                                                                              appid(0),
                                                                              elem_size(1),
                                                                              lb{0,0,0,0},
@@ -206,9 +206,9 @@ public:
         // need to re-initialize
         if(data_size != cp_.data_size) {
             if(m_layout == KokkosDataspacesConfigurationManager::LAYOUT_DEFAULT) {
-                initialize(size, file_path);
+                initialize(size, file_path, version);
             } else {
-                initialize(size, file_path, KokkosDataspacesConfigurationManager(
+                initialize(size, file_path, version, KokkosDataspacesConfigurationManager(
                                     KokkosIOConfigurationManager::get_instance()->get_config(file_path) ) );
             }
         }
@@ -219,10 +219,12 @@ public:
 
     
     int initialize( const size_t size_, 
-                    const std::string &filepath);
+                    const std::string &filepath,
+                    const size_t version_);
 
     int initialize( const size_t size_, 
-                    const std::string & filepath, 
+                    const std::string & filepath,
+                    const size_t version_, 
                     KokkosDataspacesConfigurationManager config_);
 
     int open_file(int read_write);
