@@ -20,5 +20,27 @@
             "lower_bbox":["0","0","0","0"],
             "upper_bbox":["99","99","0","0"]
         }
+    },
+    {
+        "name":"grayscott_u",
+        "Layout_Config":{
+            "rank":3,
+            "layout":"REGULAR",
+            "version":1,
+            "element_size":8,
+            "lower_bbox":["({MPI_RANK}/2)*64","({MPI_RANK}%2)*64","0","0"],
+            "upper_bbox":["({MPI_RANK}/2)*64+63","({MPI_RANK}%2)*64+63","127","0"]
+        }
+    },
+    {
+        "name":"grayscott_v",
+        "Layout_Config":{
+            "rank":3,
+            "layout":"REGULAR",
+            "version":1,
+            "element_size":8,
+            "lower_bbox":["({MPI_RANK}/2)*64","({MPI_RANK}%2)*64","0","0"],
+            "upper_bbox":["({MPI_RANK}/2)*64+63","({MPI_RANK}%2)*64+63","127","0"]
+        }
     }
 ]

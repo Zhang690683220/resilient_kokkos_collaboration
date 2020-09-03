@@ -28,6 +28,10 @@ if (KR_ENABLE_STDIO)
   target_sources(resilience_tests PRIVATE
                  TestViewCheckpoint.cpp
                  )
+
+  if (KR_ENABLE_DATASPACES)
+    add_subdirectory(grayscott)
+  endif()
                  
 endif()
 
