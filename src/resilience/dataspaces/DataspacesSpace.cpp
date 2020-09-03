@@ -215,7 +215,7 @@ namespace KokkosResilience {
     std::string DataspacesSpace::s_default_path = "./";
 
     DataspacesSpace::DataspacesSpace() {
-
+        
     }
 
     std::map<const std::string, KokkosDataspacesAccessor> DataspacesSpace::m_accessor_map;
@@ -231,7 +231,7 @@ namespace KokkosResilience {
             size_t timestep = 0;
             std::string path_prefix = KokkosIOAccessor::get_timestep(path, timestep);
             boost::property_tree::ptree pConfig;
-            if (path_prefix.compare("")) {
+            if (path_prefix.compare("") == 0) {
                 pConfig = KokkosIOConfigurationManager::get_instance()->get_config(path);
             } else {
                 pConfig = KokkosIOConfigurationManager::get_instance()->get_config(path_prefix);
