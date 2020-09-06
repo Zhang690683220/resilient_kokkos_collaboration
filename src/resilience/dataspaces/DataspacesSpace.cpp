@@ -136,7 +136,6 @@ namespace KokkosResilience {
         var_list["MPI_SIZE"] = (size_t)mpi_size;
         var_list["MPI_RANK"] = (size_t)mpi_rank;
         rank = l_config.get<int>("rank");
-        version = l_config.get<int>("version");
         elem_size = l_config.get<int>("element_size");
         config_.set_param_list( l_config, 0, "lower_bbox", lb, var_list);
         config_.set_param_list( l_config, 0, "upper_bbox", ub, var_list);
@@ -233,16 +232,24 @@ namespace KokkosResilience {
             boost::property_tree::ptree pConfig;
             if (path_prefix.compare("") == 0) {
                 pConfig = KokkosIOConfigurationManager::get_instance()->get_config(path);
+                if (pConfig.size() > 0) {
+                    acc.initialize(arg_alloc_size, path, timestep, KokkosDataspacesConfigurationManager (pConfig) );
+                }
+                else {
+                    acc.initialize(arg_alloc_size, path, timestep);
+                }
             } else {
                 pConfig = KokkosIOConfigurationManager::get_instance()->get_config(path_prefix);
+                if (pConfig.size() > 0) {
+                    acc.initialize(arg_alloc_size, path_prefix, timestep, KokkosDataspacesConfigurationManager (pConfig) );
+                }
+                else {
+                    acc.initialize(arg_alloc_size, path, timestep);
+                }
+
             }
             
-            if (pConfig.size() > 0) {
-                acc.initialize(arg_alloc_size, path, timestep, KokkosDataspacesConfigurationManager (pConfig) );
-            }
-            else {
-                acc.initialize(arg_alloc_size, path, timestep);
-            }
+
         }
         m_accessor_map[path] = acc;
         KokkosDataspacesAccessor * pAcc = new KokkosDataspacesAccessor(acc, arg_alloc_size);
