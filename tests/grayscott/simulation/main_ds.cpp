@@ -3,13 +3,14 @@
 #include <sstream>
 #include <vector>
 
+#define KOKKOS_ENABLE_MANUAL_CHECKPOINT
 #include <mpi.h>
 #include <Kokkos_Macros.hpp>
 #include <Kokkos_Core.hpp>
 #include <resilience/Resilience.hpp>
 #include "../common/timer.hpp"
 #include "gray-scott.h"
-#include "writer.h"
+#include "writer.hpp"
 
 
 
@@ -89,10 +90,10 @@ int main(int argc, char **argv)
     Timer timer_compute;
     Timer timer_write;
     std::ostringstream log_fname;
-    log_fname << "gray_scott_pe_" << rank << ".log";
+    log_fname << "gray_scott_ds_pe_" << rank << ".log";
 
     std::ofstream log(log_fname.str());
-    log << "step\ttotal_gs\tcompute_gs\twrite_gs" << std::endl;
+    log << "step\ttotal_gs\tcompute_gs\twrite_gs\tdeepcopy_gs" << std::endl;
 #endif
 
     //Init the writer
@@ -124,7 +125,7 @@ int main(int argc, char **argv)
 
         //using exec_space = typename TestFixture::exec_space;
 
-        writer.kokkos_write(sim, MPI_COMM_WORLD, i);
+        writer.kokkos_write<Kokkos::OpenMP, KokkosResilience::DataspacesSpace>(sim, MPI_COMM_WORLD, i);
 
 
 #ifdef ENABLE_TIMERS
@@ -133,7 +134,7 @@ int main(int argc, char **argv)
         MPI_Barrier(comm);
 
         log << i << "\t" << time_step << "\t" << time_compute << "\t"
-            << time_write << std::endl;
+            << time_write << "\t" <<writer.time_singletimestep << std::endl;
 #endif
     }
 
@@ -141,7 +142,7 @@ int main(int argc, char **argv)
 
 #ifdef ENABLE_TIMERS
     log << "total\t" << timer_total.elapsed() << "\t" << timer_compute.elapsed()
-        << "\t" << timer_write.elapsed() << std::endl;
+        << "\t" << timer_write.elapsed()<< "\t" << writer.timer_deepcopy.elapsed() << std::endl;
 
     log.close();
 #endif

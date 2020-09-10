@@ -8,6 +8,7 @@
 #include <string>
 #include <thread>
 
+#define KOKKOS_ENABLE_MANUAL_CHECKPOINT
 #include "mpi.h"
 #include <Kokkos_Macros.hpp>
 #include <Kokkos_Core.hpp>
@@ -15,7 +16,7 @@
 #include "../common/timer.hpp"
 #include "../simulation/settings.h"
 #include "analysis.h"
-#include "reader.h"
+#include "reader.hpp"
 
 bool epsilon(double d) { return (d < 1.0e-20); }
 bool epsilon(float d) { return (d < 1.0e-20); }
@@ -198,9 +199,26 @@ int main(int argc, char *argv[])
 
     Kokkos::initialize( argc, argv );
 
+#ifdef ENABLE_TIMERS
+    Timer timer_total;
+    Timer timer_compute;
+    Timer timer_read;
+    std::ostringstream log_fname;
+    log_fname << "pdf_calc_h5_pe_" << rank << ".log";
+
+    std::ofstream log(log_fname.str());
+    log << "step\ttotal_gs\tcompute_gs\tread_gs" << std::endl;
+#endif
+
     Reader dsreader(comm, comm_size, 2);
 
     for (int i = 0; i < settings.steps;) {
+
+#ifdef ENABLE_TIMERS
+        MPI_Barrier(comm);
+        timer_total.start();
+        timer_read.start();
+#endif
 
         i+=settings.plotgap;
 
@@ -210,7 +228,13 @@ int main(int argc, char *argv[])
                       << std::endl;
         }
 
-        dsreader.kokkos_read(anly, MPI_COMM_WORLD, i);
+        dsreader.kokkos_read<Kokkos::OpenMP, KokkosResilience::HDF5Space>(anly, MPI_COMM_WORLD, i);
+
+#ifdef ENABLE_TIMERS
+        double time_read = timer_read.stop();
+        MPI_Barrier(comm);
+        timer_compute.start();
+#endif
 
         u = anly.u_noghost();
         v = anly.v_noghost();
@@ -226,12 +250,28 @@ int main(int argc, char *argv[])
         compute_pdf(v, shape, anly.offset_x, anly.size_x, nbins, minmax_v.first,
                     minmax_v.second, pdf_v, bins_v);
 
+#ifdef ENABLE_TIMERS
+        double time_compute = timer_compute.stop();
+        double time_step = timer_total.stop();
+        MPI_Barrier(comm);
+
+        log << i << "\t" << time_step << "\t" << time_compute << "\t"
+            << time_read << std::endl;
+#endif
+
         std::string Ufname ("gray_scott_u");
         std::string Vfname ("gray_scott_v");
 
         write_pdf(Ufname, pdf_u, rank, i);
         write_pdf(Vfname, pdf_v, rank, i);
     }
+
+#ifdef ENABLE_TIMERS
+    log << "total\t" << timer_total.elapsed() << "\t" << timer_compute.elapsed()
+        << "\t" << timer_read.elapsed() << std::endl;
+
+    log.close();
+#endif
 
     MPI_Barrier(comm);
 

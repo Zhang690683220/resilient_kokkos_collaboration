@@ -1,8 +1,10 @@
 #include "Kokkos_Core.hpp"
 #include "DataspacesSpace.hpp"
 #include "Kokkos_Macros.hpp"
+#include <resilience/util/Timer.hpp>
 #include "mpi.h"
 #include <iostream>
+#include <sstream>
 
 namespace KokkosResilience {
 
@@ -33,7 +35,7 @@ namespace KokkosResilience {
             }
             lhs_op = new KokkosDataspacesConfigurationManager::OperationPrimitive((std::atoi(cur_num.c_str())));
          } else if (c == '(') {
-            size_t end_pos = data.find_first_of(')',n);
+            size_t end_pos = data.find_last_of(')');
             if (end_pos >= 0 && end_pos < data.length()) {
               // printf("calling resolving arithmetic: %s \n", data.substr(n+1,end_pos-n-1).c_str());
                lhs_op = resolve_arithmetic ( data.substr(n+1,end_pos-n-1), var_map );
@@ -186,15 +188,23 @@ namespace KokkosResilience {
         if (open_file(KokkosIOAccessor::WRITE_FILE)) {
             std::string sFullPath = KokkosIOAccessor::resolve_path( file_path, KokkosResilience::DataspacesSpace::s_default_path );
             //size_t lb[1] = {0}, ub[1] = {src_size-1};
+            std::ostringstream log_fname;
+            log_fname << "DS_write_pe_" << sFullPath << ".t" << version << ".r" << mpi_rank << ".log";
+            std::ofstream log(log_fname.str());
+            KokkosResilience::Util::Timer timer_write;
+            Kokkos::fence();
+            timer_write.start();
             dspaces_lock_on_write(sFullPath.c_str(), &gcomm);
             int err = dspaces_put(sFullPath.c_str(), version, elem_size, rank, lb, ub, src);
             /* enable if counting for exact time to put data to server */
             //dspaces_put_sync();
             dspaces_unlock_on_write(sFullPath.c_str(), &gcomm);
+            auto time_write = std::chrono::duration_cast<std::chrono::milliseconds>(timer_write.time());
+            log << time_write.count() <<std::endl;
             if(err == 0) {
                 m_written = src_size;
             } else {
-                printf("StdFile: write failed \n");
+                printf("Dataspaces: write failed \n");
             }
         }
         close_file();

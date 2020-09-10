@@ -8,7 +8,7 @@
 
 
 
-
+template <typename ExecSpace, typename CpFileSpace >
 void Reader::kokkos_read(Analysis &analysis, MPI_Comm comm, int step)
 {
     size_t size_x = analysis.size_x;
@@ -19,14 +19,14 @@ void Reader::kokkos_read(Analysis &analysis, MPI_Comm comm, int step)
     double *v_buf = (double*) malloc(size_x*size_y*size_z*sizeof(double));
 
 
-    typedef Kokkos::OpenMP::memory_space     memory_space;
+    typedef typename ExecSpace::memory_space     memory_space;
 
     typedef Kokkos::View<double***,memory_space> Rank3ViewType;
     Rank3ViewType view_3;
     view_3 = Rank3ViewType("memory_view_3", size_x, size_y, size_z);
-    Rank3ViewType::HostMirror h_view_3 = Kokkos::create_mirror(view_3);
+    typename Rank3ViewType::HostMirror h_view_3 = Kokkos::create_mirror(view_3);
 
-    typedef KokkosResilience::DataspacesSpace cp_file_space_type;
+    typedef CpFileSpace cp_file_space_type;
 
     std::string fileNameU = "grayscott_u/t" + std::to_string(step);
     std::string fileNameV = "grayscott_v/t" + std::to_string(step);
