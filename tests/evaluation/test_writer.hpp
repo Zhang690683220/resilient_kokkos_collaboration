@@ -67,7 +67,7 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
             std::cout<<"******************"<<std::endl;
         });
 
-        std::string filename = "StagingView_3D" + "_" + std::to_string(lb[0]) + "_"
+        std::string filename = "StagingView_3D_" + std::to_string(lb[0]) + "_"
                                 + std::to_string(lb[1]) + "_" + std::to_string(lb[2]) + "_"
                                 + std::to_string(ub[0]) + "_" + std::to_string(ub[1]) + "_"
                                 + std::to_string(ub[2]) + "_t" + + std::to_string(ts) + ".bin";
@@ -175,7 +175,7 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
             std::cout<<"******************"<<std::endl;
         });
 
-        std::string filename = "StagingView_3D" + "_" + std::to_string(lb[0]) + "_"
+        std::string filename = "StagingView_3D_" + std::to_string(lb[0]) + "_"
                                 + std::to_string(lb[1]) + "_" + std::to_string(lb[2]) + "_"
                                 + std::to_string(ub[0]) + "_" + std::to_string(ub[1]) + "_"
                                 + std::to_string(ub[2]) + "_t" + + std::to_string(ts) ".hdf";
