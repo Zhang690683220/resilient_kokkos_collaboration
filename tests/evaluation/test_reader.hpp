@@ -24,10 +24,6 @@ struct bbox {
     struct coord lb, ub;
 };
 
-typedef struct index {
-    uint64_t lb[3];
-    uint64_t ub[3];
-} index;
 
 /*
   Test if bounding boxes b0 and b1 intersect along dimension dim.
@@ -116,7 +112,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     memcpy(local_bb.lb.c, lb, 3*sizeof(uint64_t));
     memcpy(local_bb.ub.c, ub, 3*sizeof(uint64_t));
 
-    struct bbox src_bbox_tab = (struct bbox*) malloc(src_np[0]*src_np[1]*src_np[2]*sizeof(struct bbox));
+    struct bbox* src_bbox_tab = (struct bbox*) malloc(src_np[0]*src_np[1]*src_np[2]*sizeof(struct bbox));
     int iter[3];
     for(iter[0]; iter[0]<src_np[0]; iter[0]++) {
         for(iter[1]; iter[1]<src_np[1]; iter[1]++) {
