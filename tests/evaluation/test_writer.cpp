@@ -81,6 +81,48 @@ int main(int argc, char** argv)
     {
         switch (dims)
         {
+        case 2:
+            switch (elem_size)
+            {
+            case 4:
+                switch (backend)
+                {
+                case 1:
+                    kokkos_run<float, 2, KokkosResilience::StdFileSpace>::put_run(gcomm, np.data(), sp.data(),
+                                                                    timestep, num_vars, terminate);
+                    break;
+
+                case 2:
+                    kokkos_run<float, 2, KokkosResilience::HDF5Space>::put_run(gcomm, np.data(), sp.data(),
+                                                                    timestep, num_vars, terminate);
+                    break;
+                
+                default:
+                    break;
+                }
+                break;
+
+            case 8:
+                switch (backend)
+                {
+                case 1:
+                    kokkos_run<double, 2, KokkosResilience::StdFileSpace>::put_run(gcomm, np.data(), sp.data(),
+                                                                    timestep, num_vars, terminate);
+                    break;
+
+                case 2:
+                    kokkos_run<double, 2, KokkosResilience::HDF5Space>::put_run(gcomm, np.data(), sp.data(),
+                                                                    timestep, num_vars, terminate);
+                    break;
+                
+                default:
+                    break;
+                }
+                break;
+            
+            default:
+                break;
+            }
         case 3:
             switch (elem_size)
             {
@@ -123,6 +165,8 @@ int main(int argc, char** argv)
             default:
                 break;
             }
+
+        default:
             break;
         }
     }
