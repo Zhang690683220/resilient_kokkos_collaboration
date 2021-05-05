@@ -198,6 +198,9 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
             std::cout<<"tmp_bbox: lb = {"<<tmp_bbox.lb.c[0]<<", "<<tmp_bbox.lb.c[1]<<"}\n ub = {"
                     <<tmp_bbox.ub.c[0]<<", "<<tmp_bbox.ub.c[1]<<"}"<<std::endl;
+
+            std::cout<<"src_bbox: lb = {"<<src_bbox_tab[i].lb.c[0]<<", "<<src_bbox_tab[i].lb.c[1]<<"}\n ub = {"
+                    <<src_bbox_tab[i].ub.c[0]<<", "<<src_bbox_tab[i].ub.c[1]<<"}"<<std::endl;
             
 
             for(int i0=0; i0<src_sp[0]; i0++) {
