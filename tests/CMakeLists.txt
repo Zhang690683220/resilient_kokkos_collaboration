@@ -30,10 +30,12 @@ if (KR_ENABLE_STDIO)
                  )
 
   if (KR_ENABLE_DATASPACES)
-    add_subdirectory(grayscott)
+    #add_subdirectory(grayscott)
   endif()
                  
 endif()
+
+add_subdirectory(evaluation)
 
 
 target_link_libraries(resilience_tests PRIVATE gtest)
