@@ -117,10 +117,10 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     for(iter[0]; iter[0]<src_np[0]; iter[0]++) {
         for(iter[1]; iter[1]<src_np[1]; iter[1]++) {
             for(iter[2]; iter[2]<src_np[2]; iter[2]++){
-                src_bbox_tab[iter[0]][iter[1]][iter[2]].num_dims = 3;
+                src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].num_dims = 3;
                 for(int d=0; d<3; d++) {
-                    src_bbox_tab[iter[0]][iter[1]][iter[2]].lb.c[d] = iter[d]*src_sp[d];
-                    src_bbox_tab[iter[0]][iter[1]][iter[2]].ub.c[d] = (iter[d]+1)*src_sp[d]-1;
+                    src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].lb.c[d] = iter[d]*src_sp[d];
+                    src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].ub.c[d] = (iter[d]+1)*src_sp[d]-1;
                 }
             }
         }
@@ -140,7 +140,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     open_tab.resize(open_num);
     for(int i=0; i<src_np[0]*src_np[1]*src_np[2]; i++) {
         if(bbox_does_intersect(&local_bb, &src_bbox_tab[i])) {
-            std::string tmp = "StagingView_3D" + "_" + std::to_string(src_bbox_tab[i].lb.c[0]) + "_"
+            std::string tmp = "StagingView_3D_" + std::to_string(src_bbox_tab[i].lb.c[0]) + "_"
                                 + std::to_string(src_bbox_tab[i].lb.c[1]) + "_" + std::to_string(src_bbox_tab[i].lb.c[2]) + "_"
                                 + std::to_string(src_bbox_tab[i].ub.c[0]) + "_" + std::to_string(src_bbox_tab[i].ub.c[1]) + "_"
                                 + std::to_string(src_bbox_tab[i].ub.c[2]);
@@ -274,15 +274,15 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     memcpy(local_bb.lb.c, lb, 3*sizeof(uint64_t));
     memcpy(local_bb.ub.c, ub, 3*sizeof(uint64_t));
 
-    struct bbox src_bbox_tab = (struct bbox*) malloc(src_np[0]*src_np[1]*src_np[2]*sizeof(struct bbox));
+    struct bbox* src_bbox_tab = (struct bbox*) malloc(src_np[0]*src_np[1]*src_np[2]*sizeof(struct bbox));
     int iter[3];
     for(iter[0]; iter[0]<src_np[0]; iter[0]++) {
         for(iter[1]; iter[1]<src_np[1]; iter[1]++) {
             for(iter[2]; iter[2]<src_np[2]; iter[2]++){
-                src_bbox_tab[iter[0]][iter[1]][iter[2]].num_dims = 3;
+                src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].num_dims = 3;
                 for(int d=0; d<3; d++) {
-                    src_bbox_tab[iter[0]][iter[1]][iter[2]].lb.c[d] = iter[d]*src_sp[d];
-                    src_bbox_tab[iter[0]][iter[1]][iter[2]].ub.c[d] = (iter[d]+1)*src_sp[d]-1;
+                    src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].lb.c[d] = iter[d]*src_sp[d];
+                    src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].ub.c[d] = (iter[d]+1)*src_sp[d]-1;
                 }
             }
         }
@@ -302,7 +302,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     open_tab.resize(open_num);
     for(int i=0; i<src_np[0]*src_np[1]*src_np[2]; i++) {
         if(bbox_does_intersect(&local_bb, &src_bbox_tab[i])) {
-            std::string tmp = "StagingView_3D" + "_" + std::to_string(src_bbox_tab[i].lb.c[0]) + "_"
+            std::string tmp = "StagingView_3D_" + std::to_string(src_bbox_tab[i].lb.c[0]) + "_"
                                 + std::to_string(src_bbox_tab[i].lb.c[1]) + "_" + std::to_string(src_bbox_tab[i].lb.c[2]) + "_"
                                 + std::to_string(src_bbox_tab[i].ub.c[0]) + "_" + std::to_string(src_bbox_tab[i].ub.c[1]) + "_"
                                 + std::to_string(src_bbox_tab[i].ub.c[2]);
