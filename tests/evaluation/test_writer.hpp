@@ -22,7 +22,6 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
     MPI_Comm_size(gcomm, &nprocs);
     MPI_Comm_rank(gcomm, &rank);
 
-    Kokkos::Staging::initialize();
 
     using ViewHost_t    = Kokkos::View<Data_t***, Kokkos::HostSpace>;
     using ViewStaging_t = Kokkos::View<Data_t***, KokkosResilience::StdFileSpace>;
@@ -115,11 +114,9 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
         log.close();
         if(terminate) {
             std::cout<<"Writer sending kill signal to server."<<std::endl;
-            Kokkos::Staging::terminate();
         }
     }
 
-    Kokkos::Staging::finalize();
 
     return 0;
 };
@@ -133,7 +130,6 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
     MPI_Comm_size(gcomm, &nprocs);
     MPI_Comm_rank(gcomm, &rank);
 
-    Kokkos::Staging::initialize();
 
     using ViewHost_t    = Kokkos::View<Data_t***, Kokkos::HostSpace>;
     using ViewStaging_t = Kokkos::View<Data_t***, KokkosResilience::HDF5Space>;
@@ -226,11 +222,9 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
         log.close();
         if(terminate) {
             std::cout<<"Writer sending kill signal to server."<<std::endl;
-            Kokkos::Staging::terminate();
         }
     }
 
-    Kokkos::Staging::finalize();
 
     return 0;
 };

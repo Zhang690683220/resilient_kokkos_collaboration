@@ -106,12 +106,12 @@ int main(int argc, char** argv)
                 switch (backend)
                 {
                 case 1:
-                    kokkos_run<double, 3, Kokkos::StdFileSpace>::put_run(gcomm, np.data(), sp.data(),
+                    kokkos_run<double, 3, KokkosResilience::StdFileSpace>::put_run(gcomm, np.data(), sp.data(),
                                                                     timestep, num_vars, terminate);
                     break;
 
                 case 2:
-                    kokkos_run<double, 3, Kokkos::HDF5Space>::put_run(gcomm, np.data(), sp.data(),
+                    kokkos_run<double, 3, KokkosResilience::StdFileSpace>::put_run(gcomm, np.data(), sp.data(),
                                                                     timestep, num_vars, terminate);
                     break;
                 
