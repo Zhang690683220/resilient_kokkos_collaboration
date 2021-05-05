@@ -151,7 +151,6 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                                 + std::to_string(src_bbox_tab[i].ub.c[0]) + "_" + std::to_string(src_bbox_tab[i].ub.c[1]) + "_"
                                 + std::to_string(src_bbox_tab[i].ub.c[2]);
             open_tab[i] = tmp;
-            std::cout<<tmp<<std::endl;
         }
     }
 
@@ -201,6 +200,8 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     }
                 }
             });
+
+            std::cout<<filename<<std::endl;
         }
 
         double time_read = timer_read.stop();
