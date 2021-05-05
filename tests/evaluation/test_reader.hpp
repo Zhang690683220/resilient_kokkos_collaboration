@@ -230,7 +230,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     free(off);
     free(lb);
     free(ub);
-    free(src_bbox_tab);
+    //free(src_bbox_tab);
     free(avg_read);
 
     if(rank == 0) {
