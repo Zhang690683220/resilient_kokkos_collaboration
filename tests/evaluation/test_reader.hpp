@@ -209,11 +209,11 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             for(int i0=0; i0<src_sp[0]; i0++) {
                 for(int i1=0; i1<src_sp[1]; i1++) {
                     std::cout<<"v_G("<<i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0]<<", "<<i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1]
-                            <<") = v_tmp("<<i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0]<<", "<<i1+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[1]
-                            <<") = "<< v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],i1+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[1])<<std::endl;
+                            <<") = v_tmp("<<i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0]<<", "<<i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1]
+                            <<") = "<< v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1])<<std::endl;
                     v_G(i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0],
                         i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1]) = v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],
-                                                                        i1+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[1]);
+                                                                        i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1]);
                 }
             }
 
