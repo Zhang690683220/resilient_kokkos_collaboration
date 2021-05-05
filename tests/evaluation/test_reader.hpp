@@ -197,14 +197,14 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             bbox_intersect(&local_bb, &src_bbox_tab[i], &tmp_bbox);
 
             std::cout<<"tmp_bbox: lb = {"<<tmp_bbox.lb.c[0]<<", "<<tmp_bbox.lb.c[1]<<"}\n ub = {"
-                    <<tmp_bbox.ub.c[0]<<", "<<tmp_bbox.ub.c[1]<<std::endl;
+                    <<tmp_bbox.ub.c[0]<<", "<<tmp_bbox.ub.c[1]<<"}"<<std::endl;
             
 
             Kokkos::parallel_for(sp[0], KOKKOS_LAMBDA(const int i0) {
                 for(int i1=0; i1<sp[1]; i1++) {
                     std::cout<<"v_G("<<i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0]<<", "<<i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1]
                             <<") = v_tmp("<<i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0]<<", "<<i1+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[1]
-                            <<") = "<< v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],i1+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[1]);
+                            <<") = "<< v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],i1+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[1])<<std::endl;
                     v_G(i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0],
                         i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1]) = v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],
                                                                         i1+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[1]);
