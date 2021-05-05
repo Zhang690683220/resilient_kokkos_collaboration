@@ -161,7 +161,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     double total_avg = 0;
 
     if(rank == 0) {
-        avg_write = (double*) malloc(sizeof(double)*timesteps);
+        avg_read = (double*) malloc(sizeof(double)*timesteps);
         log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
         log << "step\tread_gs" << std::endl;
     }
@@ -197,7 +197,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             });
         }
 
-        double timer_read = timer_read.stop();
+        double time_read = timer_read.stop();
 
         Kokkos::fence();
 
@@ -322,7 +322,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     double total_avg = 0;
 
     if(rank == 0) {
-        avg_write = (double*) malloc(sizeof(double)*timesteps);
+        avg_read = (double*) malloc(sizeof(double)*timesteps);
         log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
         log << "step\tread_gs" << std::endl;
     }
@@ -358,7 +358,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             });
         }
 
-        double timer_read = timer_read.stop();
+        double time_read = timer_read.stop();
 
         Kokkos::fence();
 
