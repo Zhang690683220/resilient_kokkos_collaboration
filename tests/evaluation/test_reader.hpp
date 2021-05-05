@@ -197,7 +197,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             bbox_intersect(&local_bb, &src_bbox_tab[i], &tmp_bbox);
 
             std::cout<<"tmp_bbox: lb = {"<<tmp_bbox.lb.c[0]<<", "<<tmp_bbox.lb.c[1]<<"}\n ub = {"
-                    <<tmp_bbox.ub.c[0]", "<<tmp_bbox.ub.c[1]<<std::endl;
+                    <<tmp_bbox.ub.c[0]<<", "<<tmp_bbox.ub.c[1]<<std::endl;
             
 
             Kokkos::parallel_for(sp[0], KOKKOS_LAMBDA(const int i0) {
