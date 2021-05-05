@@ -246,7 +246,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     if(rank == 0) {
         total_avg /= timesteps;
         log << "Total" << "\t" << total_avg << "\t" << std::endl;
-        log.close();
+        //log.close();
         if(terminate) {
             std::cout<<"Writer sending kill signal to server."<<std::endl;
         }
@@ -417,7 +417,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     if(rank == 0) {
         total_avg /= timesteps;
         log << "Total" << "\t" << total_avg << "\t" << std::endl;
-        //log.close();
+        log.close();
         if(terminate) {
             std::cout<<"Writer sending kill signal to server."<<std::endl;
         }
