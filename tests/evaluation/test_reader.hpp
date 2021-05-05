@@ -121,10 +121,12 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     src_bbox_tab[iter[0]*src_np[1]+iter[1]].lb.c[d] = iter[d]*src_sp[d];
                     src_bbox_tab[iter[0]*src_np[1]+iter[1]].ub.c[d] = (iter[d]+1)*src_sp[d]-1;
                 }
+                /*
                 std::cout<<"lb: {"<<src_bbox_tab[iter[0]*src_np[1]+iter[1]].lb.c[0]<<", "
                         <<src_bbox_tab[iter[0]*src_np[1]+iter[1]].lb.c[1]<<"}\n"
                         <<"ub: {"<<src_bbox_tab[iter[0]*src_np[1]+iter[1]].ub.c[0]<<", "
                         <<src_bbox_tab[iter[0]*src_np[1]+iter[1]].ub.c[1]<<"}"<<std::endl;
+                */
         }
     }
     
@@ -155,7 +157,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     ViewHost_t v_G("GetView", sp[0], sp[1]);
     ViewHost_t v_tmp("TmpView", src_sp[0], src_sp[1]);
 
-
+/*
     //std::ofstream log;
     double* avg_read = nullptr;
     double total_avg = 0;
@@ -166,7 +168,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         //log << "step\tread_gs" << std::endl;
         std::cout << "step\tread_gs" << std::endl;
     }
-
+*/
     for(int ts=1; ts<=timesteps; ts++) {
 
         Timer timer_read;
@@ -179,7 +181,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             ViewStaging_t v_S(filename, src_sp[0], src_sp[1]);
 
             Kokkos::deep_copy(v_tmp, v_S);
-
+/*
             std::cout<<"**********"<<i<<"***********"<<std::endl;
             Kokkos::parallel_for(src_sp[0], KOKKOS_LAMBDA(const int i0) {
             for(int i1=0; i1<src_sp[1]; i1++) {
@@ -188,7 +190,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             }
             std::cout<<std::endl;
             });
-
+*/
             struct bbox tmp_bbox;
 
             bbox_intersect(&local_bb, &src_bbox_tab[i], &tmp_bbox);
@@ -208,7 +210,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         double time_read = timer_read.stop();
 
         Kokkos::fence();
-
+/*
         double *avg_time_read = nullptr;
 
         if(rank == 0) {
@@ -235,14 +237,15 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             }
             std::cout<<std::endl;
         });
+*/
     }
 
     free(off);
     free(lb);
     free(ub);
     free(src_bbox_tab);
-    free(avg_read);
-
+    //free(avg_read);
+/*
     if(rank == 0) {
         total_avg /= timesteps;
         //log << "Total" << "\t" << total_avg << "\t" << std::endl;
@@ -252,7 +255,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             std::cout<<"Writer sending kill signal to server."<<std::endl;
         }
     }
-
+*/
 
     return 0;
 };
