@@ -122,6 +122,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].lb.c[d] = iter[d]*src_sp[d];
                     src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].ub.c[d] = (iter[d]+1)*src_sp[d]-1;
                 }
+                std::cout<<src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]]<<std::endl;
             }
         }
     }
