@@ -123,6 +123,7 @@ int main(int argc, char** argv)
             default:
                 break;
             }
+            break;
         case 3:
             switch (elem_size)
             {
@@ -165,6 +166,7 @@ int main(int argc, char** argv)
             default:
                 break;
             }
+            break;
 
         default:
             break;

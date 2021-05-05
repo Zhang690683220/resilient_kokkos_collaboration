@@ -65,9 +65,8 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
         });
 
         std::string filename = "StagingView_2D_" + std::to_string(lb[0]) + "_"
-                                + std::to_string(lb[1]) + "_" + std::to_string(lb[2]) + "_"
-                                + std::to_string(ub[0]) + "_" + std::to_string(ub[1]) + "_"
-                                + std::to_string(ub[2]) + "_t" + std::to_string(ts) + ".bin";
+                                + std::to_string(lb[1]) + "_" + std::to_string(ub[0]) 
+                                + "_" + std::to_string(ub[1]) + "_t" + std::to_string(ts) + ".bin";
         
         ViewStaging_t v_S(filename, sp[0], sp[1]);
 
@@ -170,9 +169,8 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
         });
 
         std::string filename = "StagingView_2D_" + std::to_string(lb[0]) + "_"
-                                + std::to_string(lb[1]) + "_" + std::to_string(lb[2]) + "_"
-                                + std::to_string(ub[0]) + "_" + std::to_string(ub[1]) + "_"
-                                + std::to_string(ub[2]) + "_t" + std::to_string(ts) + ".hdf";
+                                + std::to_string(lb[1]) + "_" + std::to_string(ub[0]) 
+                                + "_" + std::to_string(ub[1]) + "_t" + std::to_string(ts) + ".hdf";
         
         ViewStaging_t v_S(filename, sp[0], sp[1]);
 
