@@ -1,4 +1,5 @@
 #include <Kokkos_Core.hpp>
+#define KOKKOS_ENABLE_MANUAL_CHECKPOINT
 #include <resilience/Resilience.hpp>
 #include <iostream>
 #include <vector>
@@ -6,7 +7,7 @@
 #include "mpi.h"
 #include "test_writer.hpp"
 
-#define KOKKOS_ENABLE_MANUAL_CHECKPOINT
+
 
 void print_usage()
 {
@@ -78,6 +79,8 @@ int main(int argc, char** argv)
 
     Kokkos::initialize(argc, argv);
     {
+        switch (dims)
+        {
         case 3:
             switch (elem_size)
             {
@@ -121,5 +124,20 @@ int main(int argc, char** argv)
                 break;
             }
             break;
+        }
+    }
+    Kokkos::finalize();
+
+    MPI_Barrier(gcomm);
+    MPI_Finalize();
+
+    if(rank == 0) {
+        fprintf(stderr, "That's all from test_writer, folks!\n");
+    }
+
+    return 0;
+err_out:
+    fprintf(stderr, "test_writer rank %d has failed.!\n", rank);
+    return -1;
 
 }

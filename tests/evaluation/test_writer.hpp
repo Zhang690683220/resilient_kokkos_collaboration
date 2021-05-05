@@ -2,6 +2,7 @@
 #define TEST_WRITER_HPP
 
 #include <Kokkos_Core.hpp>
+#define KOKKOS_ENABLE_MANUAL_CHECKPOINT
 #include <resilience/Resilience.hpp>
 #include <iostream>
 #include "timer.hpp"
