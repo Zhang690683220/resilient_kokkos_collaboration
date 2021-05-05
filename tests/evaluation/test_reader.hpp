@@ -114,9 +114,9 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
     struct bbox* src_bbox_tab = (struct bbox*) malloc(src_np[0]*src_np[1]*src_np[2]*sizeof(struct bbox));
     int iter[3];
-    for(iter[0]; iter[0]<src_np[0]; iter[0]++) {
-        for(iter[1]; iter[1]<src_np[1]; iter[1]++) {
-            for(iter[2]; iter[2]<src_np[2]; iter[2]++){
+    for(iter[0]=0; iter[0]<src_np[0]; iter[0]++) {
+        for(iter[1]=0; iter[1]<src_np[1]; iter[1]++) {
+            for(iter[2]=0; iter[2]<src_np[2]; iter[2]++){
                 src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].num_dims = 3;
                 for(int d=0; d<3; d++) {
                     src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].lb.c[d] = iter[d]*src_sp[d];
