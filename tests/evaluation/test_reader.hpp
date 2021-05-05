@@ -204,7 +204,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                 }
             });
 
-            std::cout<<filename<<std::endl;
+            //std::cout<<filename<<std::endl;
         }
 
         double time_read = timer_read.stop();
