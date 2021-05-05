@@ -159,7 +159,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
 
     ViewHost_t v_G("GetView", sp[0], sp[1], sp[2]);
-    ViewHost_t v_tmp("TmpView", sp[0], sp[1], sp[2]);
+    ViewHost_t v_tmp("TmpView", src_sp[0], src_sp[1], src_sp[2]);
 
 
     std::ofstream log;
