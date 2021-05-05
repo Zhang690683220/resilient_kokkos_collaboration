@@ -6,7 +6,7 @@
 #include <iostream>
 #include "timer.hpp"
 #include "mpi.h"
-#define KOKKOS_ENABLE_MANUAL_CHECKPOINT
+
 // only support 1 var_num now.
 template <class Data_t, unsigned int Dims, class StagingSpace>
 struct kokkos_run {

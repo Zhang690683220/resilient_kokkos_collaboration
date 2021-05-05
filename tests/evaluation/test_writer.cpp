@@ -6,6 +6,8 @@
 #include "mpi.h"
 #include "test_writer.hpp"
 
+#define KOKKOS_ENABLE_MANUAL_CHECKPOINT
+
 void print_usage()
 {
     std::cerr<<"Usage: test_writer --dims <dims> --np <np[0] .. np[dims-1]> --sp <sp[0] ... sp[dims-1]> "
