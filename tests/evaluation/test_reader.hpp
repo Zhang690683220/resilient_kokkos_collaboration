@@ -157,13 +157,13 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
 
     std::ofstream log;
-    double* avg_write = nullptr;
+    double* avg_read = nullptr;
     double total_avg = 0;
 
     if(rank == 0) {
         avg_write = (double*) malloc(sizeof(double)*timesteps);
-        log.open("test_writer.log", std::ofstream::out | std::ofstream::trunc);
-        log << "step\twrite_gs" << std::endl;
+        log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
+        log << "step\tread_gs" << std::endl;
     }
 
     for(int ts=1; ts<=timesteps; ts++) {
@@ -197,26 +197,26 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             });
         }
 
-        double time_write = timer_write.stop();
+        double timer_read = timer_read.stop();
 
         Kokkos::fence();
 
-        double *avg_time_write = nullptr;
+        double *avg_time_read = nullptr;
 
         if(rank == 0) {
-            avg_time_write = (double*) malloc(sizeof(double)*nprocs);
+            avg_time_read = (double*) malloc(sizeof(double)*nprocs);
         }
 
-        MPI_Gather(&time_write, 1, MPI_DOUBLE, avg_time_write, 1, MPI_DOUBLE, 0, gcomm);
+        MPI_Gather(&time_read, 1, MPI_DOUBLE, avg_time_read, 1, MPI_DOUBLE, 0, gcomm);
 
         if(rank == 0) {
             for(int i=0; i<nprocs; i++) {
-                avg_write[ts-1] += avg_time_write[i];
+                avg_read[ts-1] += avg_time_read[i];
             }
-            avg_write[ts-1] /= nprocs;
-            log << ts << "\t" << avg_write[ts-1] << "\t" << std::endl;
-            total_avg += avg_write[ts-1];
-            free(avg_time_write);
+            avg_read[ts-1] /= nprocs;
+            log << ts << "\t" << avg_read[ts-1] << "\t" << std::endl;
+            total_avg += avg_read[ts-1];
+            free(avg_time_read);
         }
     }
 
@@ -224,7 +224,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     free(lb);
     free(ub);
     free(src_bbox_tab);
-    free(avg_write);
+    free(avg_read);
 
     if(rank == 0) {
         total_avg /= timesteps;
@@ -318,13 +318,13 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
 
     std::ofstream log;
-    double* avg_write = nullptr;
+    double* avg_read = nullptr;
     double total_avg = 0;
 
     if(rank == 0) {
         avg_write = (double*) malloc(sizeof(double)*timesteps);
-        log.open("test_writer.log", std::ofstream::out | std::ofstream::trunc);
-        log << "step\twrite_gs" << std::endl;
+        log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
+        log << "step\tread_gs" << std::endl;
     }
 
     for(int ts=1; ts<=timesteps; ts++) {
@@ -334,7 +334,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         timer_read.start();
 
         for(int i=0; i<open_tab.size(); i++) {
-            std::string filename = open_tab[i] + "_t" + std::to_string(ts) + ".bin";
+            std::string filename = open_tab[i] + "_t" + std::to_string(ts) + ".hdf";
 
             ViewStaging_t v_S(filename, src_sp[0], src_sp[1], src_sp[2]);
 
@@ -358,26 +358,26 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             });
         }
 
-        double time_write = timer_write.stop();
+        double timer_read = timer_read.stop();
 
         Kokkos::fence();
 
-        double *avg_time_write = nullptr;
+        double *avg_time_read = nullptr;
 
         if(rank == 0) {
-            avg_time_write = (double*) malloc(sizeof(double)*nprocs);
+            avg_time_read = (double*) malloc(sizeof(double)*nprocs);
         }
 
-        MPI_Gather(&time_write, 1, MPI_DOUBLE, avg_time_write, 1, MPI_DOUBLE, 0, gcomm);
+        MPI_Gather(&time_read, 1, MPI_DOUBLE, avg_time_read, 1, MPI_DOUBLE, 0, gcomm);
 
         if(rank == 0) {
             for(int i=0; i<nprocs; i++) {
-                avg_write[ts-1] += avg_time_write[i];
+                avg_read[ts-1] += avg_time_read[i];
             }
-            avg_write[ts-1] /= nprocs;
-            log << ts << "\t" << avg_write[ts-1] << "\t" << std::endl;
-            total_avg += avg_write[ts-1];
-            free(avg_time_write);
+            avg_read[ts-1] /= nprocs;
+            log << ts << "\t" << avg_read[ts-1] << "\t" << std::endl;
+            total_avg += avg_read[ts-1];
+            free(avg_time_read);
         }
     }
 
@@ -385,7 +385,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     free(lb);
     free(ub);
     free(src_bbox_tab);
-    free(avg_write);
+    free(avg_read);
 
     if(rank == 0) {
         total_avg /= timesteps;
