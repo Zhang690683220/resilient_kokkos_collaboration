@@ -156,14 +156,15 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     ViewHost_t v_tmp("TmpView", src_sp[0], src_sp[1]);
 
 
-    std::ofstream log;
+    //std::ofstream log;
     double* avg_read = nullptr;
     double total_avg = 0;
 
     if(rank == 0) {
         avg_read = (double*) malloc(sizeof(double)*timesteps);
-        log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
-        log << "step\tread_gs" << std::endl;
+        //log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
+        //log << "step\tread_gs" << std::endl;
+        std::cout << "step\tread_gs" << std::endl;
     }
 
     for(int ts=1; ts<=timesteps; ts++) {
@@ -178,6 +179,15 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             ViewStaging_t v_S(filename, src_sp[0], src_sp[1]);
 
             Kokkos::deep_copy(v_tmp, v_S);
+
+            std::cout<<"**********"<<i<<"***********"<<std::endl;
+            Kokkos::parallel_for(src_sp[0], KOKKOS_LAMBDA(const int i0) {
+            for(int i1=0; i1<src_sp[1]; i1++) {
+                    std::cout<<v_tmp(i0, i1)<<"\t";
+                    
+            }
+            std::cout<<std::endl;
+            });
 
             struct bbox tmp_bbox;
 
@@ -212,7 +222,8 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                 avg_read[ts-1] += avg_time_read[i];
             }
             avg_read[ts-1] /= nprocs;
-            log << ts << "\t" << avg_read[ts-1] << "\t" << std::endl;
+            //log << ts << "\t" << avg_read[ts-1] << "\t" << std::endl;
+            std::cout << ts << "\t" << avg_read[ts-1] << "\t" << std::endl;
             total_avg += avg_read[ts-1];
             free(avg_time_read);
         }
@@ -234,7 +245,8 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
     if(rank == 0) {
         total_avg /= timesteps;
-        log << "Total" << "\t" << total_avg << "\t" << std::endl;
+        //log << "Total" << "\t" << total_avg << "\t" << std::endl;
+        std::cout<< "Total" << "\t" << total_avg << "\t" << std::endl;
         //log.close();
         if(terminate) {
             std::cout<<"Writer sending kill signal to server."<<std::endl;
