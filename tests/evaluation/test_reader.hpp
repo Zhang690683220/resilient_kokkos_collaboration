@@ -134,14 +134,16 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     }
 
     std::vector<std::string> open_tab;
-
     open_tab.resize(open_num);
+    int index_entry = 0;
     for(int i=0; i<src_np[0]*src_np[1]; i++) {
         if(bbox_does_intersect(&local_bb, &src_bbox_tab[i])) {
             std::string tmp = "StagingView_2D_" + std::to_string(src_bbox_tab[i].lb.c[0]) + "_"
                                 + std::to_string(src_bbox_tab[i].lb.c[1]) + "_"
                                 + std::to_string(src_bbox_tab[i].ub.c[0]) + "_" + std::to_string(src_bbox_tab[i].ub.c[1]);
-            open_tab[i] = tmp;
+            open_tab[index_entry] = tmp;
+            index_entry++;
+            std::cout<<open_tab[index_entry]<<std::endl;
         }
     }
 
