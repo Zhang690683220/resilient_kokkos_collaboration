@@ -157,7 +157,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     ViewHost_t v_G("GetView", sp[0], sp[1]);
     ViewHost_t v_tmp("TmpView", src_sp[0], src_sp[1]);
 
-/*
+
     //std::ofstream log;
     double* avg_read = nullptr;
     double total_avg = 0;
@@ -168,7 +168,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         //log << "step\tread_gs" << std::endl;
         std::cout << "step\tread_gs" << std::endl;
     }
-*/
+
     for(int ts=1; ts<=timesteps; ts++) {
 
         Timer timer_read;
@@ -181,9 +181,9 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             ViewStaging_t v_S(filename, src_sp[0], src_sp[1]);
 
             Kokkos::deep_copy(v_tmp, v_S);
-
-            std::cout<<"**********"<<i<<"***********"<<std::endl;
 /*
+            std::cout<<"**********"<<i<<"***********"<<std::endl;
+
             Kokkos::parallel_for(src_sp[0], KOKKOS_LAMBDA(const int i0) {
             for(int i1=0; i1<src_sp[1]; i1++) {
                     std::cout<<v_tmp(i0, i1)<<"\t";
@@ -195,7 +195,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             struct bbox tmp_bbox;
 
             bbox_intersect(&local_bb, &src_bbox_tab[i], &tmp_bbox);
-
+/*
             std::cout<<"tmp_bbox: lb = {"<<tmp_bbox.lb.c[0]<<", "<<tmp_bbox.lb.c[1]<<"}\n ub = {"
                     <<tmp_bbox.ub.c[0]<<", "<<tmp_bbox.ub.c[1]<<"}"<<std::endl;
 
@@ -204,18 +204,20 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
             std::cout<<"src_bbox: lb = {"<<src_bbox_tab[i].lb.c[0]<<", "<<src_bbox_tab[i].lb.c[1]<<"}\n ub = {"
                     <<src_bbox_tab[i].ub.c[0]<<", "<<src_bbox_tab[i].ub.c[1]<<"}"<<std::endl;
-            
+*/            
 
-            for(int i0=0; i0<src_sp[0]; i0++) {
+            Kokkos::parallel_for(src_sp[0], KOKKOS_LAMBDA(const int i0) {
                 for(int i1=0; i1<src_sp[1]; i1++) {
+/*
                     std::cout<<"v_G("<<i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0]<<", "<<i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1]
                             <<") = v_tmp("<<i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0]<<", "<<i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1]
                             <<") = "<< v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1])<<std::endl;
+*/                    
                     v_G(i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0],
                         i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1]) = v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],
                                                                         i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1]);
                 }
-            }
+            });
 
             //std::cout<<filename<<std::endl;
         }
@@ -223,7 +225,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         double time_read = timer_read.stop();
 
         Kokkos::fence();
-/*
+
         double *avg_time_read = nullptr;
 
         if(rank == 0) {
@@ -243,32 +245,31 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             free(avg_time_read);
         }
 
-        Kokkos::parallel_for(sp[0], KOKKOS_LAMBDA(const int i0) {
+        for(int i0=0; i0<sp[0]; i0++) {
             for(int i1=0; i1<sp[1]; i1++) {
-                    std::cout<<v_G(i0, i1)<<"\t";
-                    
+                    std::cout<<v_G(i0, i1)<<"\t";       
             }
             std::cout<<std::endl;
-        });
-*/
+        }
+
     }
 
     free(off);
     free(lb);
     free(ub);
     free(src_bbox_tab);
-    //free(avg_read);
-/*
+    free(avg_read);
+
     if(rank == 0) {
         total_avg /= timesteps;
-        //log << "Total" << "\t" << total_avg << "\t" << std::endl;
+        log << "Total" << "\t" << total_avg << "\t" << std::endl;
         std::cout<< "Total" << "\t" << total_avg << "\t" << std::endl;
-        //log.close();
+        log.close();
         if(terminate) {
             std::cout<<"Writer sending kill signal to server."<<std::endl;
         }
     }
-*/
+
 
     return 0;
 };
@@ -317,10 +318,6 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     src_bbox_tab[iter[0]*src_np[1]+iter[1]].lb.c[d] = iter[d]*src_sp[d];
                     src_bbox_tab[iter[0]*src_np[1]+iter[1]].ub.c[d] = (iter[d]+1)*src_sp[d]-1;
                 }
-                std::cout<<"lb: {"<<src_bbox_tab[iter[0]*src_np[1]+iter[1]].lb.c[0]<<", "
-                        <<src_bbox_tab[iter[0]*src_np[1]+iter[1]].lb.c[1]<<"}\n"
-                        <<"ub: {"<<src_bbox_tab[iter[0]*src_np[1]+iter[1]].ub.c[0]<<", "
-                        <<src_bbox_tab[iter[0]*src_np[1]+iter[1]].ub.c[1]<<"}"<<std::endl;
         }
     }
     
@@ -380,11 +377,11 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             bbox_intersect(&local_bb, &src_bbox_tab[i], &tmp_bbox);
             
 
-            Kokkos::parallel_for(sp[0], KOKKOS_LAMBDA(const int i0) {
-                for(int i1=0; i1<sp[1]; i1++) {
+            Kokkos::parallel_for(src_sp[0], KOKKOS_LAMBDA(const int i0) {
+                for(int i1=0; i1<src_sp[1]; i1++) {
                     v_G(i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0],
                         i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1]) = v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],
-                                                                        i1+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[1]);
+                                                                        i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1]);
                 }
             });
         }
@@ -411,13 +408,12 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             free(avg_time_read);
         }
 
-        Kokkos::parallel_for(sp[0], KOKKOS_LAMBDA(const int i0) {
+        for(int i0=0; i0<sp[0]; i0++) {
             for(int i1=0; i1<sp[1]; i1++) {
-                    std::cout<<v_G(i0, i1)<<"\t";
-                    
+                    std::cout<<v_G(i0, i1)<<"\t";       
             }
             std::cout<<std::endl;
-        });
+        }
     }
 
     free(off);
@@ -484,12 +480,6 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].lb.c[d] = iter[d]*src_sp[d];
                     src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].ub.c[d] = (iter[d]+1)*src_sp[d]-1;
                 }
-                std::cout<<"lb: {"<<src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].lb.c[0]<<", "
-                        <<src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].lb.c[1]<<", "
-                        <<src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].lb.c[2]<<"}\n"
-                        <<"ub: {"<<src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].ub.c[0]<<", "
-                        <<src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].ub.c[1]<<", "
-                        <<src_bbox_tab[(iter[0]*src_np[1]+iter[1])*src_np[2]+iter[2]].ub.c[2]<<"}"<<std::endl;
             }
         }
     }
@@ -551,14 +541,14 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             bbox_intersect(&local_bb, &src_bbox_tab[i], &tmp_bbox);
             
 
-            Kokkos::parallel_for(sp[0], KOKKOS_LAMBDA(const int i0) {
-                for(int i1=0; i1<sp[1]; i1++) {
-                    for(int i2=0; i2<sp[2]; i2++) {
+            Kokkos::parallel_for(src_sp[0], KOKKOS_LAMBDA(const int i0) {
+                for(int i1=0; i1<src_sp[1]; i1++) {
+                    for(int i2=0; i2<src_sp[2]; i2++) {
                         v_G(i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0],
                             i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1],
                             i2+tmp_bbox.lb.c[2]-local_bb.lb.c[2]) = v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],
-                                                                        i1+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[1],
-                                                                        i2+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[2]);
+                                                                        i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1],
+                                                                        i2+tmp_bbox.lb.c[2]-src_bbox_tab[i].lb.c[2]);
                     }
                 }
             });
@@ -588,15 +578,15 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             free(avg_time_read);
         }
 
-        Kokkos::parallel_for(sp[0], KOKKOS_LAMBDA(const int i0) {
-                for(int i1=0; i1<sp[1]; i1++) {
-                    for(int i2=0; i2<sp[2]; i2++) {
-                        std::cout<<v_G(i0, i1, i2)<<"\t";
-                    }
-                    std::cout<<std::endl;
+        for(int i0=0; i0<sp[0]; i0++) {
+            for(int i1=0; i1<sp[1]; i1++) {
+                for(int i2=0; i2<sp[2]; i2++) {
+                    std::cout<<v_G(i0, i1, i2)<<"\t";
                 }
-                std::cout<<"******************"<<std::endl;
-            });
+                std::cout<<std::endl;
+            }
+            std::cout<<"******************"<<std::endl;
+        }
     }
 
     free(off);
@@ -724,14 +714,14 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             bbox_intersect(&local_bb, &src_bbox_tab[i], &tmp_bbox);
             
 
-            Kokkos::parallel_for(sp[0], KOKKOS_LAMBDA(const int i0) {
-                for(int i1=0; i1<sp[1]; i1++) {
-                    for(int i2=0; i2<sp[2]; i2++) {
+            Kokkos::parallel_for(src_sp[0], KOKKOS_LAMBDA(const int i0) {
+                for(int i1=0; i1<src_sp[1]; i1++) {
+                    for(int i2=0; i2<src_sp[2]; i2++) {
                         v_G(i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0],
                             i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1],
                             i2+tmp_bbox.lb.c[2]-local_bb.lb.c[2]) = v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],
-                                                                        i1+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[1],
-                                                                        i2+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[2]);
+                                                                        i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1],
+                                                                        i2+tmp_bbox.lb.c[2]-src_bbox_tab[i].lb.c[2]);
                     }
                 }
             });
@@ -759,15 +749,15 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             free(avg_time_read);
         }
 
-        Kokkos::parallel_for(sp[0], KOKKOS_LAMBDA(const int i0) {
-                for(int i1=0; i1<sp[1]; i1++) {
-                    for(int i2=0; i2<sp[2]; i2++) {
-                        std::cout<<v_G(i0, i1, i2)<<"\t";
-                    }
-                    std::cout<<std::endl;
+        for(int i0=0; i0<sp[0]; i0++) {
+            for(int i1=0; i1<sp[1]; i1++) {
+                for(int i2=0; i2<sp[2]; i2++) {
+                    std::cout<<v_G(i0, i1, i2)<<"\t";
                 }
-                std::cout<<"******************"<<std::endl;
-            });
+                std::cout<<std::endl;
+            }
+            std::cout<<"******************"<<std::endl;
+        }
     }
 
     free(off);
