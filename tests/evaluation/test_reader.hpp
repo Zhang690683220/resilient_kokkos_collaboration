@@ -144,8 +144,8 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                                 + std::to_string(src_bbox_tab[i].lb.c[1]) + "_"
                                 + std::to_string(src_bbox_tab[i].ub.c[0]) + "_" + std::to_string(src_bbox_tab[i].ub.c[1]);
             open_tab[index_entry] = tmp;
-            index_entry++;
             std::cout<<open_tab[index_entry]<<std::endl;
+            index_entry++;
         }
     }
 
