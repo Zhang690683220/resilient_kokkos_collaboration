@@ -166,7 +166,6 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         avg_read = (double*) malloc(sizeof(double)*timesteps);
         log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
         log << "step\tread_gs" << std::endl;
-        log << "step\tread_gs" << std::endl;
     }
 
     for(int ts=1; ts<=timesteps; ts++) {
@@ -182,7 +181,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
             Kokkos::deep_copy(v_tmp, v_S);
 
-            if(rank == 0) {
+            //if(rank == 0) {
             std::cout<<"**********"<<i<<"***********"<<std::endl;
 
             for(int i0=0; i0<src_sp[0]; i0++) {
@@ -192,13 +191,13 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                 }
                 std::cout<<std::endl;
             }
-            }
+            //}
 
             struct bbox tmp_bbox;
 
             bbox_intersect(&local_bb, &src_bbox_tab[i], &tmp_bbox);
 
-            if(rank == 0) {
+            //if(rank == 0) {
             std::cout<<"tmp_bbox: lb = {"<<tmp_bbox.lb.c[0]<<", "<<tmp_bbox.lb.c[1]<<"}\n ub = {"
                     <<tmp_bbox.ub.c[0]<<", "<<tmp_bbox.ub.c[1]<<"}"<<std::endl;
 
@@ -207,15 +206,15 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
             std::cout<<"src_bbox: lb = {"<<src_bbox_tab[i].lb.c[0]<<", "<<src_bbox_tab[i].lb.c[1]<<"}\n ub = {"
                     <<src_bbox_tab[i].ub.c[0]<<", "<<src_bbox_tab[i].ub.c[1]<<"}"<<std::endl;
-            }
+            //}
 
             for(int i0=0; i0<src_sp[0]; i0++) {
                 for(int i1=0; i1<src_sp[1]; i1++) {
-                    if(rank == 0) {
+                    //if(rank == 0) {
                     std::cout<<"v_G("<<i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0]<<", "<<i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1]
                             <<") = v_tmp("<<i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0]<<", "<<i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1]
                             <<") = "<< v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1])<<std::endl;
-                    }
+                    //}
                     v_G(i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0],
                         i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1]) = v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],
                                                                         i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1]);
