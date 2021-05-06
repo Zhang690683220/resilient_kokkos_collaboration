@@ -80,14 +80,14 @@ template <class Data_t, unsigned int Dims, class StagingSpace>
 struct kokkos_run {
     static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                         uint64_t* src_sp, uint64_t* offset, int timesteps,
-                        int var_num, bool terminate);
+                        int var_num, bool transpose);
 };
 
 template <class Data_t>
 struct kokkos_run<Data_t, 2, KokkosResilience::StdFileSpace> {
 static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     uint64_t* src_sp, uint64_t* offset, int timesteps,
-                    int var_num, bool terminate)
+                    int var_num, bool transpose)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -226,6 +226,16 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             //std::cout<<filename<<std::endl;
         }
 
+        if(transpose) {
+            ViewHost_t v_GT("GetView_T", sp[1], sp[0]);
+            Kokkos::parallel_for(sp[0], KOKKOS_LAMBDA(const int i0) {
+                for(int i1=0; i1<sp[1]; i1++) {
+                    v_GT(i1, i0) = v_G(i0, i1);
+                }
+            });
+            memcpy(v_G.data(), v_GT.data(), sizeof(Data_t)*sp[0]*sp[1]);
+        }
+
         double time_read = timer_read.stop();
 
         Kokkos::fence();
@@ -262,7 +272,6 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     free(lb);
     free(ub);
     free(src_bbox_tab);
-/*
     free(avg_read);
 
     if(rank == 0) {
@@ -270,11 +279,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         log << "Total" << "\t" << total_avg << "\t" << std::endl;
         log<< "Total" << "\t" << total_avg << "\t" << std::endl;
         log.close();
-        if(terminate) {
-            std::cout<<"Writer sending kill signal to server."<<std::endl;
-        }
     }
-*/
 
     return 0;
 };
@@ -284,7 +289,7 @@ template <class Data_t>
 struct kokkos_run<Data_t, 2, KokkosResilience::HDF5Space> {
 static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     uint64_t* src_sp, uint64_t* offset, int timesteps,
-                    int var_num, bool terminate)
+                    int var_num, bool transpose)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -433,9 +438,6 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         total_avg /= timesteps;
         log << "Total" << "\t" << total_avg << "\t" << std::endl;
         log.close();
-        if(terminate) {
-            std::cout<<"Writer sending kill signal to server."<<std::endl;
-        }
     }
 
 
@@ -447,7 +449,7 @@ template <class Data_t>
 struct kokkos_run<Data_t, 3, KokkosResilience::StdFileSpace> {
 static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     uint64_t* src_sp, uint64_t* offset, int timesteps,
-                    int var_num, bool terminate)
+                    int var_num, bool transpose)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -605,10 +607,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     if(rank == 0) {
         total_avg /= timesteps;
         log << "Total" << "\t" << total_avg << "\t" << std::endl;
-        //log.close();
-        if(terminate) {
-            std::cout<<"Writer sending kill signal to server."<<std::endl;
-        }
+        log.close();
     }
 
 
@@ -620,7 +619,7 @@ template <class Data_t>
 struct kokkos_run<Data_t, 3, KokkosResilience::HDF5Space> {
 static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     uint64_t* src_sp, uint64_t* offset, int timesteps,
-                    int var_num, bool terminate)
+                    int var_num, bool transpose)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -779,9 +778,6 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         total_avg /= timesteps;
         log << "Total" << "\t" << total_avg << "\t" << std::endl;
         log.close();
-        if(terminate) {
-            std::cout<<"Writer sending kill signal to server."<<std::endl;
-        }
     }
 
 

@@ -12,7 +12,7 @@
 void print_usage()
 {
     std::cerr<<"Usage: test_writer --dims <dims> --np <np[0] .. np[dims-1]> --sp <sp[0] ... sp[dims-1]> "
-               "--ts <timesteps> [-s <elem_size>] [-c <var_count>] [-t <terminate>]"<<std::endl
+               "--ts <timesteps> [-s <elem_size>] [-c <var_count>] [-t <transpose>]"<<std::endl
              <<"--dims                      - number of data dimensions. Must be [1-8]"<<std::endl
              <<"--np                        - the number of processes in the ith dimension. "
                "The product of np[0],...,np[dim-1] must be the number of MPI ranks"<<std::endl
@@ -23,7 +23,7 @@ void print_usage()
              <<"-s, --elem_size (optional)  - the number of bytes in each element. Defaults to 8"<<std::endl
              <<"-c, --var_count (optional)  - the number of variables written in each iteration. "
                "Defaults to 1"<<std::endl
-             <<"-t (optional)               - send server termination after writing is complete"<<std::endl;
+             <<"-t (optional)               - whethre need transpose at reader side"<<std::endl;
 }
 
 int main(int argc, char** argv)
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     int timestep;
     size_t elem_size = 8;
     int num_vars = 1;
-    bool terminate = false;
+    bool transpose = false;
     app.add_option("--dims", dims, "number of data dimensions. Must be [1-8]")->required();
     app.add_option("--np", np, "the number of processes in the ith dimension. The product of np[0],"
                     "...,np[dim-1] must be the number of MPI ranks")->expected(1, 8);
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
                     true);
     app.add_option("-c, --var_count", num_vars, "the number of variables written in each iteration."
                     "Defaults to 1", true);
-    app.add_option("-t", terminate, "send server termination after writing is complete", true);
+    app.add_option("-t", transpose, "whethre need transpose at reader side", true);
 
     CLI11_PARSE(app, argc, argv);
 
@@ -110,13 +110,13 @@ int main(int argc, char** argv)
                 case 1:
                     kokkos_run<float, 2, KokkosResilience::StdFileSpace>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, terminate);
+                                                                    timestep, num_vars, transpose);
                     break;
 
                 case 2:
                     kokkos_run<float, 2, KokkosResilience::HDF5Space>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, terminate);
+                                                                    timestep, num_vars, transpose);
                     break;
                 
                 default:
@@ -130,13 +130,13 @@ int main(int argc, char** argv)
                 case 1:
                     kokkos_run<double, 2, KokkosResilience::StdFileSpace>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, terminate);
+                                                                    timestep, num_vars, transpose);
                     break;
 
                 case 2:
                     kokkos_run<double, 2, KokkosResilience::StdFileSpace>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, terminate);
+                                                                    timestep, num_vars, transpose);
                     break;
                 
                 default:
@@ -158,13 +158,13 @@ int main(int argc, char** argv)
                 case 1:
                     kokkos_run<float, 3, KokkosResilience::StdFileSpace>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, terminate);
+                                                                    timestep, num_vars, transpose);
                     break;
 
                 case 2:
                     kokkos_run<float, 3, KokkosResilience::HDF5Space>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, terminate);
+                                                                    timestep, num_vars, transpose);
                     break;
                 
                 default:
@@ -178,13 +178,13 @@ int main(int argc, char** argv)
                 case 1:
                     kokkos_run<double, 3, KokkosResilience::StdFileSpace>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, terminate);
+                                                                    timestep, num_vars, transpose);
                     break;
 
                 case 2:
                     kokkos_run<double, 3, KokkosResilience::StdFileSpace>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, terminate);
+                                                                    timestep, num_vars, transpose);
                     break;
                 
                 default:
