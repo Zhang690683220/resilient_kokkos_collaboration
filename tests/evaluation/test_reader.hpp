@@ -500,16 +500,18 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         }
     }
 
-    std::vector<std::string> open_tab;
-
+    std::vector<struct meta_file> open_tab;
     open_tab.resize(open_num);
+    int index_entry = 0;
     for(int i=0; i<src_np[0]*src_np[1]*src_np[2]; i++) {
         if(bbox_does_intersect(&local_bb, &src_bbox_tab[i])) {
             std::string tmp = "StagingView_3D_" + std::to_string(src_bbox_tab[i].lb.c[0]) + "_"
                                 + std::to_string(src_bbox_tab[i].lb.c[1]) + "_" + std::to_string(src_bbox_tab[i].lb.c[2]) + "_"
                                 + std::to_string(src_bbox_tab[i].ub.c[0]) + "_" + std::to_string(src_bbox_tab[i].ub.c[1]) + "_"
                                 + std::to_string(src_bbox_tab[i].ub.c[2]);
-            open_tab[i] = tmp;
+            open_tab[index_entry].filename = tmp;
+            memcpy(&open_tab[index_entry].bb, &src_bbox_tab[i], sizeof(struct bbox));
+            index_entry++;
         }
     }
 
@@ -537,7 +539,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         timer_read.start();
 
         for(int i=0; i<open_tab.size(); i++) {
-            std::string filename = open_tab[i] + "_t" + std::to_string(ts) + ".bin";
+            std::string filename = open_tab[i].filename + "_t" + std::to_string(ts) + ".bin";
 
             ViewStaging_t v_S(filename, src_sp[0], src_sp[1], src_sp[2]);
 
@@ -545,7 +547,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
             struct bbox tmp_bbox;
 
-            bbox_intersect(&local_bb, &src_bbox_tab[i], &tmp_bbox);
+            bbox_intersect(&local_bb, &open_tab[i].bb, &tmp_bbox);
             
 
             Kokkos::parallel_for(src_sp[0], KOKKOS_LAMBDA(const int i0) {
@@ -553,9 +555,9 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     for(int i2=0; i2<src_sp[2]; i2++) {
                         v_G(i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0],
                             i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1],
-                            i2+tmp_bbox.lb.c[2]-local_bb.lb.c[2]) = v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],
-                                                                        i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1],
-                                                                        i2+tmp_bbox.lb.c[2]-src_bbox_tab[i].lb.c[2]);
+                            i2+tmp_bbox.lb.c[2]-local_bb.lb.c[2]) = v_tmp(i0+tmp_bbox.lb.c[0]-open_tab[i].bb.lb.c[0],
+                                                                        i1+tmp_bbox.lb.c[1]-open_tab[i].bb.lb.c[1],
+                                                                        i2+tmp_bbox.lb.c[2]-open_tab[i].bb.lb.c[2]);
                     }
                 }
             });
@@ -671,16 +673,18 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         }
     }
 
-    std::vector<std::string> open_tab;
-
+    std::vector<struct meta_file> open_tab;
     open_tab.resize(open_num);
+    int index_entry = 0;
     for(int i=0; i<src_np[0]*src_np[1]*src_np[2]; i++) {
         if(bbox_does_intersect(&local_bb, &src_bbox_tab[i])) {
             std::string tmp = "StagingView_3D_" + std::to_string(src_bbox_tab[i].lb.c[0]) + "_"
                                 + std::to_string(src_bbox_tab[i].lb.c[1]) + "_" + std::to_string(src_bbox_tab[i].lb.c[2]) + "_"
                                 + std::to_string(src_bbox_tab[i].ub.c[0]) + "_" + std::to_string(src_bbox_tab[i].ub.c[1]) + "_"
                                 + std::to_string(src_bbox_tab[i].ub.c[2]);
-            open_tab[i] = tmp;
+            open_tab[index_entry].filename = tmp;
+            memcpy(&open_tab[index_entry].bb, &src_bbox_tab[i], sizeof(struct bbox));
+            index_entry++;
         }
     }
 
@@ -708,7 +712,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         timer_read.start();
 
         for(int i=0; i<open_tab.size(); i++) {
-            std::string filename = open_tab[i] + "_t" + std::to_string(ts) + ".hdf";
+            std::string filename = open_tab[i].filename + "_t" + std::to_string(ts) + ".hdf";
 
             ViewStaging_t v_S(filename, src_sp[0], src_sp[1], src_sp[2]);
 
@@ -716,7 +720,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
             struct bbox tmp_bbox;
 
-            bbox_intersect(&local_bb, &src_bbox_tab[i], &tmp_bbox);
+            bbox_intersect(&local_bb, &open_tab[i].bb, &tmp_bbox);
             
 
             Kokkos::parallel_for(src_sp[0], KOKKOS_LAMBDA(const int i0) {
@@ -724,9 +728,9 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     for(int i2=0; i2<src_sp[2]; i2++) {
                         v_G(i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0],
                             i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1],
-                            i2+tmp_bbox.lb.c[2]-local_bb.lb.c[2]) = v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],
-                                                                        i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1],
-                                                                        i2+tmp_bbox.lb.c[2]-src_bbox_tab[i].lb.c[2]);
+                            i2+tmp_bbox.lb.c[2]-local_bb.lb.c[2]) = v_tmp(i0+tmp_bbox.lb.c[0]-open_tab[i].bb.lb.c[0],
+                                                                        i1+tmp_bbox.lb.c[1]-open_tab[i].bb.lb.c[1],
+                                                                        i2+tmp_bbox.lb.c[2]-open_tab[i].bb.lb.c[2]);
                     }
                 }
             });
