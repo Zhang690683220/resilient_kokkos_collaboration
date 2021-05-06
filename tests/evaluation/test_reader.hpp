@@ -158,14 +158,14 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     ViewHost_t v_tmp("TmpView", src_sp[0], src_sp[1]);
 
 
-    //std::ofstream log;
+    std::ofstream log;
     double* avg_read = nullptr;
     double total_avg = 0;
 
     if(rank == 0) {
         avg_read = (double*) malloc(sizeof(double)*timesteps);
-        //log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
-        //log << "step\tread_gs" << std::endl;
+        log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
+        log << "step\tread_gs" << std::endl;
         std::cout << "step\tread_gs" << std::endl;
     }
 
