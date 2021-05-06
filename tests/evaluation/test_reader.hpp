@@ -167,7 +167,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
         log << "step\tread_gs" << std::endl;
     }
-
+/*
     for(int ts=1; ts<=timesteps; ts++) {
 
         Timer timer_read;
@@ -255,7 +255,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         }
 
     }
-
+*/
     free(off);
     free(lb);
     free(ub);
