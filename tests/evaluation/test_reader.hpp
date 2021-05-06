@@ -124,7 +124,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         }
     }
     
-/*
+
     
     int open_num = 0;
     for(int i=0; i<src_np[0]*src_np[1]; i++) {
@@ -132,7 +132,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             open_num++;
         }
     }
-
+/*
     std::vector<std::string> open_tab;
 
     open_tab.resize(open_num);
