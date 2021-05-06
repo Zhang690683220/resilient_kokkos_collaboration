@@ -398,6 +398,16 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             });
         }
 
+        if(transpose) {
+            ViewHost_t v_GT("GetView_T", sp[1], sp[0]);
+            Kokkos::parallel_for(sp[0], KOKKOS_LAMBDA(const int i0) {
+                for(int i1=0; i1<sp[1]; i1++) {
+                    v_GT(i1, i0) = v_G(i0, i1);
+                }
+            });
+            memcpy(v_G.data(), v_GT.data(), sizeof(Data_t)*sp[0]*sp[1]);
+        }
+
         double time_read = timer_read.stop();
 
         Kokkos::fence();
@@ -563,6 +573,18 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     }
                 }
             });
+        }
+
+        if(transpose) {
+            ViewHost_t v_GT("GetView_T", sp[2], sp[1], sp[0]);
+            Kokkos::parallel_for(sp[0], KOKKOS_LAMBDA(const int i0) {
+                for(int i1=0; i1<sp[1]; i1++) {
+                    for(int i2=0; i2<sp[2]; i2++) {
+                        v_GT(i2, i1, i0) = v_G(i0, i1, i2);
+                    }
+                }
+            });
+            memcpy(v_G.data(), v_GT.data(), sizeof(Data_t)*sp[0]*sp[1]*sp[2]);
         }
 
         double time_read = timer_read.stop();
@@ -733,6 +755,18 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     }
                 }
             });
+        }
+
+        if(transpose) {
+            ViewHost_t v_GT("GetView_T", sp[2], sp[1], sp[0]);
+            Kokkos::parallel_for(sp[0], KOKKOS_LAMBDA(const int i0) {
+                for(int i1=0; i1<sp[1]; i1++) {
+                    for(int i2=0; i2<sp[2]; i2++) {
+                        v_GT(i2, i1, i0) = v_G(i0, i1, i2);
+                    }
+                }
+            });
+            memcpy(v_G.data(), v_GT.data(), sizeof(Data_t)*sp[0]*sp[1]*sp[2]);
         }
 
         double time_read = timer_read.stop();
