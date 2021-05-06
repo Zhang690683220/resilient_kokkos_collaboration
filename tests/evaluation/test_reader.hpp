@@ -105,7 +105,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         lb[i] = off[i] + offset[i];
         ub[i] = off[i] + sp[i] - 1 + offset[i];
     }
-/*
+
     struct bbox local_bb;
 
     local_bb.num_dims = 2;
@@ -124,7 +124,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         }
     }
     
-
+/*
     
     int open_num = 0;
     for(int i=0; i<src_np[0]*src_np[1]; i++) {
@@ -253,8 +253,8 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     free(off);
     free(lb);
     free(ub);
-/*
     free(src_bbox_tab);
+/*
     free(avg_read);
 
     if(rank == 0) {
