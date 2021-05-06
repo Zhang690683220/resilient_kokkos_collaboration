@@ -27,7 +27,7 @@ struct bbox {
 struct meta_file {
     struct bbox bb;
     std::string filename;
-}
+};
 
 
 /*
