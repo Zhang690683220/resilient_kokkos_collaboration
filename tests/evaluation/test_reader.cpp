@@ -207,12 +207,12 @@ int main(int argc, char** argv)
     MPI_Finalize();
 
     if(rank == 0) {
-        fprintf(stderr, "That's all from test_writer, folks!\n");
+        fprintf(stderr, "That's all from test_reader, folks!\n");
     }
 
     return 0;
 err_out:
-    fprintf(stderr, "test_writer rank %d has failed.!\n", rank);
+    fprintf(stderr, "test_reader rank %d has failed.!\n", rank);
     return -1;
 
 }

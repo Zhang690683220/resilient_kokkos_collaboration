@@ -105,7 +105,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         lb[i] = off[i] + offset[i];
         ub[i] = off[i] + sp[i] - 1 + offset[i];
     }
-
+/*
     struct bbox local_bb;
 
     local_bb.num_dims = 2;
@@ -121,12 +121,6 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     src_bbox_tab[iter[0]*src_np[1]+iter[1]].lb.c[d] = iter[d]*src_sp[d];
                     src_bbox_tab[iter[0]*src_np[1]+iter[1]].ub.c[d] = (iter[d]+1)*src_sp[d]-1;
                 }
-                /*
-                std::cout<<"lb: {"<<src_bbox_tab[iter[0]*src_np[1]+iter[1]].lb.c[0]<<", "
-                        <<src_bbox_tab[iter[0]*src_np[1]+iter[1]].lb.c[1]<<"}\n"
-                        <<"ub: {"<<src_bbox_tab[iter[0]*src_np[1]+iter[1]].ub.c[0]<<", "
-                        <<src_bbox_tab[iter[0]*src_np[1]+iter[1]].ub.c[1]<<"}"<<std::endl;
-                */
         }
     }
     
@@ -167,7 +161,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
         log << "step\tread_gs" << std::endl;
     }
-/*
+
     for(int ts=1; ts<=timesteps; ts++) {
 
         Timer timer_read;
@@ -259,6 +253,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
     free(off);
     free(lb);
     free(ub);
+/*
     free(src_bbox_tab);
     free(avg_read);
 
@@ -271,7 +266,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             std::cout<<"Writer sending kill signal to server."<<std::endl;
         }
     }
-
+*/
 
     return 0;
 };
