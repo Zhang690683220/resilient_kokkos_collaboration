@@ -24,6 +24,11 @@ struct bbox {
     struct coord lb, ub;
 };
 
+struct meta_file {
+    struct bbox bb;
+    std::string filename;
+}
+
 
 /*
   Test if bounding boxes b0 and b1 intersect along dimension dim.
@@ -135,7 +140,8 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
     std::cout<<"open_num = "<<open_num<<std::endl;
 
-    std::vector<std::string> open_tab;
+    
+    std::vector<struct meta_file> open_tab;
     open_tab.resize(open_num);
     int index_entry = 0;
     for(int i=0; i<src_np[0]*src_np[1]; i++) {
@@ -143,8 +149,9 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             std::string tmp = "StagingView_2D_" + std::to_string(src_bbox_tab[i].lb.c[0]) + "_"
                                 + std::to_string(src_bbox_tab[i].lb.c[1]) + "_"
                                 + std::to_string(src_bbox_tab[i].ub.c[0]) + "_" + std::to_string(src_bbox_tab[i].ub.c[1]);
-            open_tab[index_entry] = tmp;
-            std::cout<<open_tab[index_entry]<<std::endl;
+            open_tab[index_entry].filename = tmp;
+            memcpy(&open_tab[index_entry].bb, &src_bbox_tab[i], sizeof(struct bbox));
+            std::cout<<open_tab[index_entry].filename<<std::endl;
             index_entry++;
         }
     }
@@ -170,7 +177,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         timer_read.start();
 
         for(int i=0; i<open_tab.size(); i++) {
-            std::string filename = open_tab[i] + "_t" + std::to_string(ts) + ".bin";
+            std::string filename = open_tab[i].filename + "_t" + std::to_string(ts) + ".bin";
 
             ViewStaging_t v_S(filename, src_sp[0], src_sp[1]);
 
@@ -199,20 +206,20 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             std::cout<<"local_bbox: lb = {"<<local_bb.lb.c[0]<<", "<<local_bb.lb.c[1]<<"}\n ub = {"
                     <<local_bb.ub.c[0]<<", "<<local_bb.ub.c[1]<<"}"<<std::endl;
 
-            std::cout<<"src_bbox: lb = {"<<src_bbox_tab[i].lb.c[0]<<", "<<src_bbox_tab[i].lb.c[1]<<"}\n ub = {"
-                    <<src_bbox_tab[i].ub.c[0]<<", "<<src_bbox_tab[i].ub.c[1]<<"}"<<std::endl;
+            std::cout<<"src_bbox: lb = {"<<open_tab[i].bb.lb.c[0]<<", "<<open_tab[i].bb.lb.c[1]<<"}\n ub = {"
+                    <<open_tab[i].bb.ub.c[0]<<", "<<open_tab[i].bb.ub.c[1]<<"}"<<std::endl;
             //}
 
             for(int i0=0; i0<src_sp[0]; i0++) {
                 for(int i1=0; i1<src_sp[1]; i1++) {
                     //if(rank == 0) {
                     std::cout<<"v_G("<<i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0]<<", "<<i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1]
-                            <<") = v_tmp("<<i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0]<<", "<<i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1]
-                            <<") = "<< v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1])<<std::endl;
+                            <<") = v_tmp("<<i0+tmp_bbox.lb.c[0]-open_tab[i].bb.lb.c[0]<<", "<<i1+tmp_bbox.lb.c[1]-open_tab[i].bb.lb.c[1]
+                            <<") = "<< v_tmp(i0+tmp_bbox.lb.c[0]-open_tab[i].bb.lb.c[0],i1+tmp_bbox.lb.c[1]-open_tab[i].bb.lb.c[1])<<std::endl;
                     //}
                     v_G(i0+tmp_bbox.lb.c[0]-local_bb.lb.c[0],
-                        i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1]) = v_tmp(i0+tmp_bbox.lb.c[0]-src_bbox_tab[i].lb.c[0],
-                                                                        i1+tmp_bbox.lb.c[1]-src_bbox_tab[i].lb.c[1]);
+                        i1+tmp_bbox.lb.c[1]-local_bb.lb.c[1]) = v_tmp(i0+tmp_bbox.lb.c[0]-open_tab[i].bb.lb.c[0],
+                                                                        i1+tmp_bbox.lb.c[1]-open_tab[i].bb.lb.c[1]);
                 }
             }
 
