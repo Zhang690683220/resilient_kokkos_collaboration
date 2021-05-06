@@ -133,6 +133,8 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         }
     }
 
+    std::cout<<"open_num = "<<open_num<<std::endl;
+
     std::vector<std::string> open_tab;
     open_tab.resize(open_num);
     int index_entry = 0;
