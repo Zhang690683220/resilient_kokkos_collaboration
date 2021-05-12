@@ -39,6 +39,7 @@ int main(int argc, char** argv)
     int timestep;
     size_t elem_size = 8;
     int num_vars = 1;
+    std::string log_name = "test_reader.log";
     bool transpose = false;
     app.add_option("--dims", dims, "number of data dimensions. Must be [1-8]")->required();
     app.add_option("--np", np, "the number of processes in the ith dimension. The product of np[0],"
@@ -55,6 +56,7 @@ int main(int argc, char** argv)
                     true);
     app.add_option("-c, --var_count", num_vars, "the number of variables written in each iteration."
                     "Defaults to 1", true);
+    app.add_option("--log", log_name, "output log file name. Default to test_reader.log", true);
     app.add_option("-t", transpose, "whethre need transpose at reader side", true);
 
     CLI11_PARSE(app, argc, argv);

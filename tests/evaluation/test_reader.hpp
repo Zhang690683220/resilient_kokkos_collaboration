@@ -80,14 +80,14 @@ template <class Data_t, unsigned int Dims, class StagingSpace>
 struct kokkos_run {
     static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                         uint64_t* src_sp, uint64_t* offset, int timesteps,
-                        int var_num, bool transpose);
+                        int var_num, std::string log_name, bool transpose);
 };
 
 template <class Data_t>
 struct kokkos_run<Data_t, 2, KokkosResilience::StdFileSpace> {
 static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     uint64_t* src_sp, uint64_t* offset, int timesteps,
-                    int var_num, bool transpose)
+                    int var_num, std::string log_name, bool transpose)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -166,7 +166,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
     if(rank == 0) {
         avg_read = (double*) malloc(sizeof(double)*timesteps);
-        log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
+        log.open(log_name, std::ofstream::out | std::ofstream::trunc);
         log << "step\tread_gs" << std::endl;
     }
 
@@ -289,7 +289,7 @@ template <class Data_t>
 struct kokkos_run<Data_t, 2, KokkosResilience::HDF5Space> {
 static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     uint64_t* src_sp, uint64_t* offset, int timesteps,
-                    int var_num, bool transpose)
+                    int var_num, std::string log_name, bool transpose)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -367,7 +367,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
     if(rank == 0) {
         avg_read = (double*) malloc(sizeof(double)*timesteps);
-        log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
+        log.open(log_name, std::ofstream::out | std::ofstream::trunc);
         log << "step\tread_gs" << std::endl;
     }
 
@@ -459,7 +459,7 @@ template <class Data_t>
 struct kokkos_run<Data_t, 3, KokkosResilience::StdFileSpace> {
 static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     uint64_t* src_sp, uint64_t* offset, int timesteps,
-                    int var_num, bool transpose)
+                    int var_num, std::string log_name, bool transpose)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -540,7 +540,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
     if(rank == 0) {
         avg_read = (double*) malloc(sizeof(double)*timesteps);
-        log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
+        log.open(log_name, std::ofstream::out | std::ofstream::trunc);
         log << "step\tread_gs" << std::endl;
     }
 
@@ -641,7 +641,7 @@ template <class Data_t>
 struct kokkos_run<Data_t, 3, KokkosResilience::HDF5Space> {
 static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     uint64_t* src_sp, uint64_t* offset, int timesteps,
-                    int var_num, bool transpose)
+                    int var_num, std::string log_name, bool transpose)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -722,7 +722,7 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
     if(rank == 0) {
         avg_read = (double*) malloc(sizeof(double)*timesteps);
-        log.open("test_reader.log", std::ofstream::out | std::ofstream::trunc);
+        log.open(log_name, std::ofstream::out | std::ofstream::trunc);
         log << "step\tread_gs" << std::endl;
     }
 
