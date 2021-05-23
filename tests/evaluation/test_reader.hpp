@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include "timer.hpp"
+#include "unistd.h"
 #include "mpi.h"
 
 #define bb_max(a, b) (a) > (b) ? (a) : (b)
@@ -80,14 +81,14 @@ template <class Data_t, unsigned int Dims, class StagingSpace>
 struct kokkos_run {
     static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                         uint64_t* src_sp, uint64_t* offset, int timesteps,
-                        int var_num, std::string log_name, bool transpose);
+                        int var_num, int delay, std::string log_name, bool transpose);
 };
 
 template <class Data_t>
 struct kokkos_run<Data_t, 2, KokkosResilience::StdFileSpace> {
 static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     uint64_t* src_sp, uint64_t* offset, int timesteps,
-                    int var_num, std::string log_name, bool transpose)
+                    int var_num, int delay, std::string log_name, bool transpose)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -240,6 +241,8 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
         Kokkos::fence();
 
+        sleep(delay);
+
         double *avg_time_read = nullptr;
 
         if(rank == 0) {
@@ -289,7 +292,7 @@ template <class Data_t>
 struct kokkos_run<Data_t, 2, KokkosResilience::HDF5Space> {
 static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     uint64_t* src_sp, uint64_t* offset, int timesteps,
-                    int var_num, std::string log_name, bool transpose)
+                    int var_num, int delay, std::string log_name, bool transpose)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -412,6 +415,8 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
         Kokkos::fence();
 
+        sleep(delay);
+
         double *avg_time_read = nullptr;
 
         if(rank == 0) {
@@ -459,7 +464,7 @@ template <class Data_t>
 struct kokkos_run<Data_t, 3, KokkosResilience::StdFileSpace> {
 static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     uint64_t* src_sp, uint64_t* offset, int timesteps,
-                    int var_num, std::string log_name, bool transpose)
+                    int var_num, int delay, std::string log_name, bool transpose)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -591,6 +596,8 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
 
         Kokkos::fence();
 
+        sleep(delay);
+
         double *avg_time_read = nullptr;
 
         if(rank == 0) {
@@ -641,7 +648,7 @@ template <class Data_t>
 struct kokkos_run<Data_t, 3, KokkosResilience::HDF5Space> {
 static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
                     uint64_t* src_sp, uint64_t* offset, int timesteps,
-                    int var_num, std::string log_name, bool transpose)
+                    int var_num, int delay, std::string log_name, bool transpose)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -772,6 +779,8 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
         double time_read = timer_read.stop();
 
         Kokkos::fence();
+
+        sleep(delay);
 
         double *avg_time_read = nullptr;
 

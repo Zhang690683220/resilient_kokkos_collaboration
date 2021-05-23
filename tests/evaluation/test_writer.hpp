@@ -6,17 +6,20 @@
 #include <resilience/Resilience.hpp>
 #include <iostream>
 #include "timer.hpp"
+#include "unistd.h"
 #include "mpi.h"
 
 // only support 1 var_num now.
 template <class Data_t, unsigned int Dims, class StagingSpace>
 struct kokkos_run {
-    static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int var_num, bool terminate);
+    static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps,
+                        int var_num, int delay, bool terminate);
 };
 
 template <class Data_t>
 struct kokkos_run<Data_t, 2, KokkosResilience::StdFileSpace> {
-static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int var_num, bool terminate)
+static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, 
+                    int var_num, int delay, bool terminate)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -63,6 +66,8 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
             }
             std::cout<<std::endl;
         });
+
+        sleep(delay);
 
         std::string filename = "StagingView_2D_" + std::to_string(lb[0]) + "_"
                                 + std::to_string(lb[1]) + "_" + std::to_string(ub[0]) 
@@ -120,7 +125,8 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
 
 template <class Data_t>
 struct kokkos_run<Data_t, 2, KokkosResilience::HDF5Space> {
-static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int var_num, bool terminate)
+static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, 
+                    int var_num, int delay, bool terminate)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -167,6 +173,8 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
             }
             std::cout<<std::endl;
         });
+
+        sleep(delay);
 
         std::string filename = "StagingView_2D_" + std::to_string(lb[0]) + "_"
                                 + std::to_string(lb[1]) + "_" + std::to_string(ub[0]) 
@@ -224,7 +232,8 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
 
 template <class Data_t>
 struct kokkos_run<Data_t, 3, KokkosResilience::StdFileSpace> {
-static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int var_num, bool terminate)
+static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, 
+                    int var_num, int delay, bool terminate)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -268,12 +277,14 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
             for(int i1=0; i1<sp[1]; i1++) {
                 for(int i2=0; i2<sp[2]; i2++) {
                     v_P(i0,i1,i2) = (i0*sp[1]+i1)*sp[2]+i2 + 0.01*ts;
-                    std::cout<<v_P(i0,i1,i2)<<"\t";
+                    //std::cout<<v_P(i0,i1,i2)<<"\t";
                 }
-                std::cout<<std::endl;
+                //std::cout<<std::endl;
             }
-            std::cout<<"******************"<<std::endl;
+            //std::cout<<"******************"<<std::endl;
         });
+
+        sleep(delay);
 
         std::string filename = "StagingView_3D_" + std::to_string(lb[0]) + "_"
                                 + std::to_string(lb[1]) + "_" + std::to_string(lb[2]) + "_"
@@ -332,7 +343,8 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
 
 template <class Data_t>
 struct kokkos_run<Data_t, 3, KokkosResilience::HDF5Space> {
-static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int var_num, bool terminate)
+static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, 
+                    int var_num, int delay, bool terminate)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -376,12 +388,14 @@ static int put_run (MPI_Comm gcomm, int* np, uint64_t* sp, int timesteps, int va
             for(int i1=0; i1<sp[1]; i1++) {
                 for(int i2=0; i2<sp[2]; i2++) {
                     v_P(i0,i1,i2) = (i0*sp[1]+i1)*sp[2]+i2 + 0.01*ts;
-                    std::cout<<v_P(i0,i1,i2)<<"\t";
+                    //std::cout<<v_P(i0,i1,i2)<<"\t";
                 }
-                std::cout<<std::endl;
+                //std::cout<<std::endl;
             }
-            std::cout<<"******************"<<std::endl;
+            //std::cout<<"******************"<<std::endl;
         });
+
+        sleep(delay);
 
         std::string filename = "StagingView_3D_" + std::to_string(lb[0]) + "_"
                                 + std::to_string(lb[1]) + "_" + std::to_string(lb[2]) + "_"
