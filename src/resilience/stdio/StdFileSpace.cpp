@@ -102,6 +102,7 @@ namespace KokkosResilience {
          while ( !file_strm.eof() && dataRead < dest_size ) {
             file_strm.read( &ptr[dataRead], dest_size );
             dataRead += file_strm.gcount();
+            file_strm.sync();
          }
       } else {
          printf("WARNING: cannot open file for reading: %s\n", file_path.c_str());
@@ -118,19 +119,11 @@ namespace KokkosResilience {
       size_t m_written = 0;
       char* ptr = (char*)src;
       if (open_file(KokkosIOAccessor::WRITE_FILE) ) {
-         std::ostringstream log_fname;
-            log_fname << "Stdio_write_pe_" << file_path << ".log";
-            std::ofstream log(log_fname.str());
-            KokkosResilience::Util::Timer timer_write;
-            Kokkos::fence();
-            timer_write.start();
-
+         Kokkos::fence();
           file_strm.write(&ptr[0], src_size);
-
-          auto time_write = std::chrono::duration_cast<std::chrono::milliseconds>(timer_write.time());
-            log << time_write.count() <<std::endl;
           if (!file_strm.fail())
              m_written = src_size;
+          file_strm.flush();
       }
       close_file();
       if (m_written != src_size) {

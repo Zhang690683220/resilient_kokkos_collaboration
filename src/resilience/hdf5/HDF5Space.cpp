@@ -319,12 +319,6 @@ namespace KokkosResilience {
          //          local_extents[0], local_extents[1], local_extents[2]);
          //printf("[%d] hyperslab: %d, %d, %d, %d \n", mpi_rank, file_offset[0], file_stride[0], file_count[0], file_block[0] );
          //printf("[%d]            %d, %d, %d, %d \n", mpi_rank, file_offset[1], file_stride[1], file_count[1], file_block[1] );
-         std::ostringstream log_fname;
-            log_fname << "H5_write_pe_" << file_path<< ".log";
-            std::ofstream log(log_fname.str());
-            KokkosResilience::Util::Timer timer_write;
-            Kokkos::fence();
-            timer_write.start();
          
          m_mid = H5Screate_simple(rank, local_extents, NULL);
          hid_t fsid = H5Dget_space(m_did);
@@ -352,8 +346,6 @@ namespace KokkosResilience {
                      
                      status = H5Dwrite(m_did, H5T_NATIVE_CHAR, m_mid, fsid, pid, &ptr[view_offset[0]]);
 
-                     auto time_write = std::chrono::duration_cast<std::chrono::milliseconds>(timer_write.time());
-            log << time_write.count() <<std::endl;
                      if (status == 0) {
                         int written_ = 1;
                         for (int r = 0; r < rank; r++) {
