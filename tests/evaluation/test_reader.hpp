@@ -616,15 +616,6 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             free(avg_time_read);
         }
 
-        for(int i0=0; i0<sp[0]; i0++) {
-            for(int i1=0; i1<sp[1]; i1++) {
-                for(int i2=0; i2<sp[2]; i2++) {
-                    std::cout<<v_G(i0, i1, i2)<<"\t";
-                }
-                std::cout<<std::endl;
-            }
-            std::cout<<"******************"<<std::endl;
-        }
     }
 
     free(off);
@@ -800,15 +791,6 @@ static int get_run (MPI_Comm gcomm, int* np, uint64_t* sp, int* src_np,
             free(avg_time_read);
         }
 
-        for(int i0=0; i0<sp[0]; i0++) {
-            for(int i1=0; i1<sp[1]; i1++) {
-                for(int i2=0; i2<sp[2]; i2++) {
-                    std::cout<<v_G(i0, i1, i2)<<"\t";
-                }
-                std::cout<<std::endl;
-            }
-            std::cout<<"******************"<<std::endl;
-        }
     }
 
     free(off);
