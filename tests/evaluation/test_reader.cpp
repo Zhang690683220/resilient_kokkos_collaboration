@@ -112,13 +112,13 @@ int main(int argc, char** argv)
                 case 1:
                     kokkos_run<float, 2, KokkosResilience::StdFileSpace>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, transpose);
+                                                                    timestep, num_vars, log_name, transpose);
                     break;
 
                 case 2:
                     kokkos_run<float, 2, KokkosResilience::HDF5Space>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, transpose);
+                                                                    timestep, num_vars, log_name, transpose);
                     break;
                 
                 default:
@@ -132,13 +132,13 @@ int main(int argc, char** argv)
                 case 1:
                     kokkos_run<double, 2, KokkosResilience::StdFileSpace>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, transpose);
+                                                                    timestep, num_vars, log_name, transpose);
                     break;
 
                 case 2:
                     kokkos_run<double, 2, KokkosResilience::StdFileSpace>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, transpose);
+                                                                    timestep, num_vars, log_name, transpose);
                     break;
                 
                 default:
@@ -160,13 +160,13 @@ int main(int argc, char** argv)
                 case 1:
                     kokkos_run<float, 3, KokkosResilience::StdFileSpace>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, transpose);
+                                                                    timestep, num_vars, log_name, transpose);
                     break;
 
                 case 2:
                     kokkos_run<float, 3, KokkosResilience::HDF5Space>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, transpose);
+                                                                    timestep, num_vars, log_name, transpose);
                     break;
                 
                 default:
@@ -180,13 +180,13 @@ int main(int argc, char** argv)
                 case 1:
                     kokkos_run<double, 3, KokkosResilience::StdFileSpace>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, transpose);
+                                                                    timestep, num_vars, log_name, transpose);
                     break;
 
                 case 2:
                     kokkos_run<double, 3, KokkosResilience::StdFileSpace>::get_run(gcomm, np.data(), sp.data(),
                                                                     src_np.data(), src_sp.data(), offset.data(),
-                                                                    timestep, num_vars, transpose);
+                                                                    timestep, num_vars, log_name, transpose);
                     break;
                 
                 default:
